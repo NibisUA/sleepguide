@@ -1,0 +1,62 @@
+# Production stack for a single VM (e.g. Oracle Cloud Always Free):
+#   web     - Caddy: HTTPS (Let's Encrypt), static frontend, reverse proxy to the backend
+#   backend - FastAPI + Telegram bot (runs Alembic migrations on start)
+#   db      - PostgreSQL (not exposed outside the Docker network)
+#
+# Run: docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sleepguide
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: sleepguide
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sleepguide"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      ENV: prod
+      DATABASE_URL: postgresql+asyncpg://sleepguide:${POSTGRES_PASSWORD}@db:5432/sleepguide
+      BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN in .env.prod}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env.prod}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?set WEBHOOK_SECRET in .env.prod}
+      MINI_APP_URL: https://${DOMAIN}
+      WEBHOOK_BASE_URL: https://${DOMAIN}
+      CORS_ORIGINS: '["https://${DOMAIN}"]'
+      DEV_LOGIN_ENABLED: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env.prod}
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

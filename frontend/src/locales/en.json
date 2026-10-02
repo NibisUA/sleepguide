@@ -1,0 +1,19 @@
+{
+  "common": { "loading": "Loading…", "error": "Something went wrong. Please try again." },
+  "duration": { "hm": "{{h}}h {{m}}m", "m": "{{m}}m" },
+  "home": { "title": "SleepGuide" },
+  "sleep": {
+    "sleeping": "You're asleep",
+    "since": "Started: {{time}}",
+    "elapsed": "{{duration}} so far",
+    "start": "🌙 Start sleep",
+    "stop": "☀️ I woke up",
+    "lastSleep": "Last sleep",
+    "noData": "No records yet. Tap “Start sleep” in the evening.",
+    "nap": "Nap",
+    "wakeTitle": "When did you wake up?",
+    "wakeHint": "This session has been open for over 14 hours. Tell us when you actually woke up.",
+    "confirm": "Confirm",
+    "invalidTime": "Wake-up time must be after the start and not in the future."
+  }
+}

@@ -1,0 +1,14 @@
+{$DOMAIN} {
+	encode zstd gzip
+
+	@backend path /api/* /telegram/webhook /health
+	handle @backend {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
