@@ -16,6 +16,8 @@ dependencies = [
   "pydantic-settings>=2.3",
   "aiogram>=3.10",
   "pyjwt>=2.8",
+  # IANA time-zone database for zoneinfo; Windows and slim images may lack it.
+  "tzdata>=2024.1",
 ]
 
 [project.optional-dependencies]

@@ -67,5 +67,6 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     res = await send(path, init);
   }
   if (!res.ok) throw await parseError(res);
+  if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }

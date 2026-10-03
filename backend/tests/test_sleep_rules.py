@@ -34,3 +34,9 @@ def test_end_time_validation():
     assert not r.is_valid_end(start, start, now)
     assert not r.is_valid_end(start, dt(2026, 9, 29, 21, 0), now)
     assert not r.is_valid_end(start, now + timedelta(hours=1), now)
+
+
+def test_max_session_length():
+    start = dt(2026, 9, 29, 22, 0)
+    assert not r.is_too_long(start, start + timedelta(hours=20))
+    assert r.is_too_long(start, start + timedelta(hours=20, minutes=1))

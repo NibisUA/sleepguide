@@ -1,8 +1,8 @@
 # Build context is the repository root (see docker-compose.prod.yml).
 FROM node:22-alpine AS build
 WORKDIR /app
-COPY frontend/package.json ./
-RUN npm install
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
 COPY frontend/ ./
 # VITE_API_URL is intentionally unset: the API is served from the same origin under /api
 RUN npm run build

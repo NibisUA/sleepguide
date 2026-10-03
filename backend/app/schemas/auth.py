@@ -1,3 +1,5 @@
+from datetime import time
+
 from pydantic import BaseModel
 
 
@@ -12,6 +14,9 @@ class UserOut(BaseModel):
     language: str
     timezone: str
     sleep_goal_minutes: int
+    target_bedtime: time | None = None
+    reminder_evening_time: time | None = None
+    reminder_morning_on: bool = True
 
 
 class TokenOut(BaseModel):

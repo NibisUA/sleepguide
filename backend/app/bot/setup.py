@@ -1,7 +1,8 @@
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import CommandStart
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
+from aiogram.types import BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
 
+from app.bot import handlers, texts
 from app.core.config import get_settings
 
 router = Router()
@@ -33,4 +34,15 @@ def create_bot(token: str) -> Bot:
 def create_dispatcher() -> Dispatcher:
     dispatcher = Dispatcher()
     dispatcher.include_router(router)
+    dispatcher.include_router(handlers.router)
     return dispatcher
+
+
+async def set_commands(bot: Bot) -> None:
+    """Register /sleep and /wake in the command menu (default English, plus Ukrainian)."""
+    for language_code, lang in ((None, "en"), ("uk", "uk")):
+        commands = [
+            BotCommand(command="sleep", description=texts.text(lang, "cmd_sleep")),
+            BotCommand(command="wake", description=texts.text(lang, "cmd_wake")),
+        ]
+        await bot.set_my_commands(commands, language_code=language_code)

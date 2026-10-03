@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:5173"]
     dev_login_enabled: bool = False
+    reminders_enabled: bool = True  # background reminder loop (needs BOT_TOKEN)
 
     @field_validator("database_url")
     @classmethod

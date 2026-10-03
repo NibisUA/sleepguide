@@ -3,7 +3,7 @@
 Telegram Mini App for tracking sleep, workouts, stress and screen time, with personal insights.
 Full plan: [docs/product.md](docs/product.md).
 
-**Status:** Phase 1–2 — project setup, Telegram authentication, sleep Start/Stop vertical slice.
+**Status:** Phase 1–3 — project setup, Telegram authentication, sleep Start/Stop, retroactive entry and editing, Sleep Score with component breakdown, 7/30-day history and a yearly heatmap.
 
 ## Stack
 
@@ -58,13 +58,40 @@ uvicorn app.main:app --reload
 | GET / PATCH | `/api/v1/me` | Profile, time zone, language, sleep goal |
 | POST | `/api/v1/sleep/start` | Start a session (idempotent) |
 | POST | `/api/v1/sleep/stop` | Stop; `{ "ended_at": ... }` is required if the session was open > 14 h |
+| POST | `/api/v1/sleep` | Retroactive entry (`started_at` + `ended_at`) |
 | GET | `/api/v1/sleep/current` | Open session or `null` |
-| GET | `/api/v1/sleep?limit=30` | Recent sessions |
+| GET | `/api/v1/sleep?limit=30&date=` | Recent sessions (optionally for one wake-up date) |
+| GET | `/api/v1/sleep/{id}` | One session |
+| PATCH | `/api/v1/sleep/{id}` | Edit times; also closes a forgotten-Stop session |
+| DELETE | `/api/v1/sleep/{id}` | Delete a session (or cancel an open one) |
+| GET | `/api/v1/sleep/score/{date}` | Sleep Score + component breakdown for that wake-up date |
+| GET | `/api/v1/sleep/history?from=&to=` | Daily summaries for charts and the heatmap (max 367 days) |
 
 Frontend API types: run `npm run gen:api` (backend must be running) to generate them from OpenAPI;
 until then `src/types/api.ts` holds hand-written types.
 
-## Next steps (roadmap Phase 3+)
+The Sleep Score is computed on the fly (never stored): duration 40, consistency 30, sleep debt 20,
+bedtime timing 10. With fewer than 7 days of data the history-dependent components are omitted and
+the remaining weights are renormalized, with a "based on limited data" label. Naps (< 3 h) are
+stored but excluded from the Score. The breakdown is always shown in the UI.
 
-Retroactive sleep entry and editing, Sleep Score, bot reminders, workout / stress / screen-time modules,
-dashboard and history, insights.
+## Next steps (roadmap Phase 4+)
+
+Bot reminders (evening Start / morning Stop buttons), workout / stress / screen-time modules,
+settings, insights and data export.
+
+
+## Phase 4: bot reminders
+
+- **Evening reminder** (Settings → Bot reminders): a message at the chosen local time with a
+  "🌙 Start sleep" button. Sent at most once per day, skipped if a sleep is already running, and
+  only within 90 minutes after the scheduled time (never hours late).
+- **Morning reminder**: a *silent* message with "☀️ I woke up", only for a session that is still
+  open after 5–14 hours, between 07:00 and 12:00 local time, once per session. If the session is
+  older than 14 hours the bot asks to confirm the wake-up time in the Mini App.
+- **Commands:** `/sleep` (start) and `/wake` (stop) work without opening the Mini App.
+- The scheduler is a loop inside the backend process (`app/bot/reminders.py`, checks every minute).
+  Run **one** backend process (the default `docker-compose.prod.yml` does). Set
+  `REMINDERS_ENABLED=false` to turn it off.
+- If the user blocks the bot, their reminders are switched off automatically.
+- New migration `0002` (idempotency markers on `users`); it is applied on start.

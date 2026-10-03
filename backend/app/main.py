@@ -1,21 +1,27 @@
+import asyncio
 import logging
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.router import api_router
-from app.bot.setup import create_bot, create_dispatcher
+from app.bot.reminders import run_reminder_loop
+from app.bot.setup import create_bot, create_dispatcher, set_commands
 from app.bot.webhook import build_webhook_router
 from app.core.config import get_settings
 from app.services.errors import DomainError
 
 ERROR_STATUS = {
     "no_open_session": 404,
+    "sleep_not_found": 404,
     "wake_time_required": 409,
+    "overlap": 409,
     "invalid_time": 422,
+    "too_long": 422,
+    "invalid_range": 422,
 }
 
 
@@ -35,7 +41,20 @@ def create_app() -> FastAPI:
                 )
             except Exception:  # the API must still start if Telegram is unreachable
                 logging.getLogger(__name__).exception("Failed to set Telegram webhook")
+        if bot:
+            try:
+                await set_commands(bot)
+            except Exception:
+                logging.getLogger(__name__).exception("Failed to set bot commands")
+        # One process, one loop (see app/bot/reminders.py). Do not run several workers.
+        reminder_task = (
+            asyncio.create_task(run_reminder_loop(bot)) if bot and settings.reminders_enabled else None
+        )
         yield
+        if reminder_task:
+            reminder_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await reminder_task
         if bot:
             await bot.session.close()
 
