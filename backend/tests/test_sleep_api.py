@@ -9,7 +9,7 @@ from datetime import UTC, date, datetime, time, timedelta
 
 from fastapi.testclient import TestClient
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_user_or_api_token
 from app.core.db import get_session
 from app.main import app
 from app.models import SleepSession, User
@@ -78,6 +78,11 @@ class FakeSession:
 
 def client_with(*results, user: User | None = None) -> TestClient:
     app.dependency_overrides.clear()
+    if user is not None:
+        for key, value in (("reminder_pattern_on", False), ("weekly_sleep_days", 5),
+                           ("weekly_workout_days", 3), ("weekly_stress_days", 3), ("weekly_screen_days", 3)):
+            if getattr(user, key) is None:
+                setattr(user, key, value)
     created: list[FakeSession] = []
 
     def make_session() -> FakeSession:
@@ -98,6 +103,8 @@ def client_with(*results, user: User | None = None) -> TestClient:
             reminder_morning_on=True,
         )
     )
+    # sleep start/stop also accept API tokens; in these tests the user is faked for both
+    app.dependency_overrides[get_user_or_api_token] = app.dependency_overrides[get_current_user]
     client = TestClient(app)
     client.sessions = created  # type: ignore[attr-defined]
     return client

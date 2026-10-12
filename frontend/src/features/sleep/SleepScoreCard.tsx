@@ -1,8 +1,10 @@
+import { QueryError, Skeleton } from "../../components/QueryState";
+import { FeedbackCard } from "../personal/FeedbackCard";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 
-import { formatDate, formatDuration } from "../../lib/format";
+import { addDays, formatDate, formatDuration, isoDate } from "../../lib/format";
 import { scoreColor } from "../../lib/score";
 import type { SleepScoreComponent } from "../../types/api";
 import { useSleepList, useSleepScore } from "./api";
@@ -26,7 +28,7 @@ function Ring({ value }: { value: number }) {
   const offset = CIRCUMFERENCE * (1 - score / 100);
   return (
     <div className="relative h-36 w-36 shrink-0">
-      <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
+      <svg aria-hidden="true" viewBox="0 0 120 120" className="h-full w-full -rotate-90">
         <circle
           cx="60"
           cy="60"
@@ -119,8 +121,8 @@ export function SleepScoreCard() {
   );
   const score = useSleepScore(lastNight?.local_date ?? undefined);
 
-  if (list.isPending || score.isLoading) return <Shell>{t("common.loading")}</Shell>;
-  if (list.isError || score.isError) return <Shell>{t("common.error")}</Shell>;
+  if (list.isPending || score.isLoading) return <Skeleton />;
+  if (list.isError || score.isError) return <QueryError error={list.error ?? score.error} retry={() => { void list.refetch(); void score.refetch(); }} />;
 
   const data = score.data;
   if (!data) {
@@ -150,9 +152,10 @@ export function SleepScoreCard() {
       </div>
       <ul className="mt-4 border-t border-muted/10">
         {data.components.map((component) => (
-          <ComponentRow key={component.key} component={component} />
+          <ComponentRow key={component.key} component={{ ...component, detail: component.detail ?? {} }} />
         ))}
       </ul>
+      {data.date >= addDays(isoDate(new Date()), -179) && <FeedbackCard key={data.date} day={data.date} />}
     </Shell>
   );
 }

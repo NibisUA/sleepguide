@@ -12,6 +12,11 @@ class UserUpdate(BaseModel):
     target_bedtime: time | None = None  # null clears the target (the default is used)
     reminder_evening_time: time | None = None  # null turns the evening reminder off
     reminder_morning_on: bool | None = None
+    reminder_pattern_on: bool | None = None
+    weekly_sleep_days: Annotated[int, Field(ge=0, le=7, strict=True)] | None = None
+    weekly_workout_days: Annotated[int, Field(ge=0, le=7, strict=True)] | None = None
+    weekly_stress_days: Annotated[int, Field(ge=0, le=7, strict=True)] | None = None
+    weekly_screen_days: Annotated[int, Field(ge=0, le=7, strict=True)] | None = None
 
     @field_validator("timezone")
     @classmethod

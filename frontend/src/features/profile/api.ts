@@ -4,10 +4,11 @@ import { api } from "../../lib/api";
 import type { User } from "../../types/api";
 import { SLEEP_KEY } from "../sleep/api";
 
-export function useMe() {
+export function useMe(enabled = true) {
   return useQuery({
     queryKey: ["me"],
     queryFn: () => api<User>("/me"),
+    enabled,
   });
 }
 
@@ -20,6 +21,11 @@ type UserPatch = Partial<
     | "target_bedtime"
     | "reminder_evening_time"
     | "reminder_morning_on"
+    | "reminder_pattern_on"
+    | "weekly_sleep_days"
+    | "weekly_workout_days"
+    | "weekly_stress_days"
+    | "weekly_screen_days"
   >
 >;
 

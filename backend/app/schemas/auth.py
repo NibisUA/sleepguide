@@ -17,6 +17,11 @@ class UserOut(BaseModel):
     target_bedtime: time | None = None
     reminder_evening_time: time | None = None
     reminder_morning_on: bool = True
+    reminder_pattern_on: bool = False
+    weekly_sleep_days: int = 5
+    weekly_workout_days: int = 3
+    weekly_stress_days: int = 3
+    weekly_screen_days: int = 3
 
 
 class TokenOut(BaseModel):

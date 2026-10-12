@@ -118,7 +118,7 @@ export function SleepForm({
           type="button"
           disabled={busy}
           onClick={submit}
-          className="flex-1 rounded-2xl bg-primary py-3 font-semibold text-bg disabled:opacity-60"
+          className="flex-1 rounded-2xl bg-primary py-3 font-semibold text-on-primary disabled:opacity-60"
         >
           {t("sleep.save")}
         </button>

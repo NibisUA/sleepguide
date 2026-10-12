@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import client_ip
 from app.core.config import get_settings
 from app.core.db import get_session
+from app.core.rate_limit import login_limiter
 from app.core.security import create_access_token
 from app.core.telegram_auth import InitDataError, validate_init_data
 from app.schemas.auth import TelegramLoginIn, TokenOut
 from app.services import user_service
+from app.services.errors import DomainError
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -15,8 +18,10 @@ DEV_TELEGRAM_USER_ID = 999_000_001
 
 @router.post("/telegram", response_model=TokenOut)
 async def login_with_telegram(
-    body: TelegramLoginIn, session: AsyncSession = Depends(get_session)
+    body: TelegramLoginIn, request: Request, session: AsyncSession = Depends(get_session)
 ) -> TokenOut:
+    if not login_limiter.allow(client_ip(request)):
+        raise DomainError("rate_limited", "Too many login attempts; try again later")
     settings = get_settings()
     try:
         tg_user = validate_init_data(
@@ -24,7 +29,9 @@ async def login_with_telegram(
         )
     except InitDataError as exc:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail={"code": str(exc)}) from exc
-    user = await user_service.get_or_create_by_telegram_id(session, tg_user.id, tg_user.language_code)
+    user = await user_service.get_or_create_by_telegram_id(
+        session, tg_user.id, tg_user.language_code
+    )
     return TokenOut(access_token=create_access_token(user.id), user=user)
 
 

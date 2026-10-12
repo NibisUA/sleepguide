@@ -4,6 +4,9 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
+ARG VITE_PRIVACY_OWNER=""
+ARG VITE_PRIVACY_CONTACT=""
+ARG VITE_PRIVACY_APPROVED="false"
 # VITE_API_URL is intentionally unset: the API is served from the same origin under /api
 RUN npm run build
 

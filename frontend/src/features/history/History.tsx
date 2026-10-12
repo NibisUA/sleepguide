@@ -1,8 +1,10 @@
+import { QueryError, Skeleton } from "../../components/QueryState";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DurationBars, ScoreLine } from "../../components/charts";
-import { addDays, formatDate, formatDuration, formatTime, isoDate } from "../../lib/format";
+import { confirmAction } from "../../lib/confirm";
+import { formatDate, formatDuration, formatTime, isoDate } from "../../lib/format";
 import { scoreColor } from "../../lib/score";
 import type { SleepSession } from "../../types/api";
 import { useMe } from "../profile/api";
@@ -14,24 +16,32 @@ import {
   useUpdateSleep,
 } from "../sleep/api";
 import { SleepForm, dayDefaults, type SleepFormValues } from "../sleep/SleepForm";
+import { ScreenTimeHistory } from "../screentime/ScreenTimeHistory";
+import { StressHistory } from "../stress/StressHistory";
+import { DaySummarySheet } from "../day/DaySummarySheet";
+import { WorkoutHistory } from "../workout/WorkoutHistory";
+import { RecordsSection } from "../records/RecordsSection";
 import { YearHeatmap } from "./YearHeatmap";
+import { sleepPoints, useHistoryEntries, useHistoryOverview, type HistoryRange } from "./api";
+import { BucketNote, ChartScroll, EntryPager, PeriodCaption, RangePicker } from "./HistoryControls";
 
 export function History() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
   const today = isoDate(new Date());
 
-  const [range, setRange] = useState<7 | 30>(7);
+  const [range, setRange] = useState<HistoryRange>("7d");
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [selected, setSelected] = useState<string>(today);
   const [editing, setEditing] = useState<SleepSession | null>(null);
   const [creating, setCreating] = useState(false);
+  const [summaryDate, setSummaryDate] = useState<string | null>(null);
 
   const me = useMe();
-  const rangeDays = useSleepHistory(addDays(today, -(range - 1)), today);
+  const overview = useHistoryOverview(range);
   const yearDays = useSleepHistory(`${year}-01-01`, `${year}-12-31`);
   const daySessions = useSleepList(50, selected);
-  const recent = useSleepList(10);
+  const recent = useHistoryEntries("sleep", overview.data?.from_date, overview.data?.to_date);
 
   const create = useCreateSleep();
   const update = useUpdateSleep();
@@ -39,19 +49,11 @@ export function History() {
   const busy = create.isPending || update.isPending;
   const writeError = editing ? update.error : create.error;
 
-  const days = rangeDays.data ?? [];
-  const scored = days.filter((day) => day.score !== null);
-  const averageScore = scored.length
-    ? Math.round(scored.reduce((sum, day) => sum + (day.score ?? 0), 0) / scored.length)
-    : null;
-  const slept = days.filter((day) => day.sleep_minutes > 0);
-  const averageDuration = slept.length
-    ? Math.round(slept.reduce((sum, day) => sum + day.sleep_minutes, 0) / slept.length)
-    : null;
-  const selectedDay =
-    days.find((day) => day.date === selected) ??
-    (yearDays.data ?? []).find((day) => day.date === selected) ??
-    null;
+  const days = overview.data ? sleepPoints(overview.data) : [];
+  const averageScore = overview.data?.sleep.average_score == null ? null : Math.round(overview.data.sleep.average_score);
+  const averageDuration = overview.data?.sleep.average_minutes == null ? null : Math.round(overview.data.sleep.average_minutes);
+  const selectedDay = (yearDays.data ?? []).find(day => day.date === selected) ?? null;
+  const recentRows = recent.data?.pages.flatMap(page => page.sleep_sessions) ?? [];
 
   function closeForm() {
     setEditing(null);
@@ -66,8 +68,8 @@ export function History() {
     }
   }
 
-  function deleteSession(session: SleepSession) {
-    if (window.confirm(t("sleep.deleteConfirm"))) {
+  async function deleteSession(session: SleepSession) {
+    if (await confirmAction(t("sleep.deleteConfirm"))) {
       remove.mutate(session.id, { onSuccess: closeForm });
     }
   }
@@ -75,7 +77,7 @@ export function History() {
   function startEditing(session: SleepSession) {
     setCreating(false);
     setEditing(session);
-    if (session.local_date) setSelected(session.local_date);
+    if (session.local_date) { setSelected(session.local_date); setYear(Number(session.local_date.slice(0, 4))); }
   }
 
   return (
@@ -88,7 +90,7 @@ export function History() {
             setEditing(null);
             setCreating(true);
           }}
-          className="rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-bg"
+          className="rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-on-primary"
         >
           {t("sleep.add")}
         </button>
@@ -113,20 +115,8 @@ export function History() {
       )}
 
       <section className="rounded-3xl bg-surface p-5">
-        <div className="flex gap-2">
-          {([7, 30] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setRange(value)}
-              className={`flex-1 rounded-full py-2 text-sm ${
-                range === value ? "bg-primary font-semibold text-bg" : "border border-muted/30 text-muted"
-              }`}
-            >
-              {t(value === 7 ? "history.range7" : "history.range30")}
-            </button>
-          ))}
-        </div>
+        <RangePicker value={range} onChange={setRange} />
+        {overview.data && <PeriodCaption overview={overview.data} />}
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-bg p-3">
@@ -147,19 +137,22 @@ export function History() {
           </div>
         </div>
 
-        {rangeDays.isPending || rangeDays.isError ? (
-          <p className="mt-5 text-sm text-muted">
-            {rangeDays.isPending ? t("common.loading") : t("common.error")}
-          </p>
-        ) : (
-          <>
-            <p className="mt-5 text-sm text-muted">{t("history.durationChart")}</p>
-            <DurationBars days={days} goal={me.data?.sleep_goal_minutes ?? 480} locale={locale} />
-            <p className="mt-5 text-sm text-muted">{t("history.scoreChart")}</p>
-            <ScoreLine days={days} locale={locale} />
-          </>
-        )}
+        {overview.isPending ? <Skeleton /> : overview.isError ?
+          <QueryError error={overview.error} retry={() => void overview.refetch()} /> : <>
+          <p className="mt-5 text-sm text-muted">{t("history.durationChart")}</p>
+          <BucketNote overview={overview.data} kind="sleep" />
+          <ChartScroll count={days.length}><DurationBars days={days} goal={me.data?.sleep_goal_minutes ?? 480} locale={locale} /></ChartScroll>
+          <p className="mt-5 text-sm text-muted">{t("history.scoreChart")}</p>
+          <ChartScroll count={days.length}><ScoreLine days={days} locale={locale} /></ChartScroll>
+        </>}
       </section>
+
+      {overview.data && <WorkoutHistory key={"workout-" + range} overview={overview.data} />}
+      <RecordsSection />
+
+      {overview.data && <StressHistory key={"stress-" + range} overview={overview.data} />}
+
+      {overview.data && <ScreenTimeHistory key={"screen-" + range} overview={overview.data} />}
 
       <section className="rounded-3xl bg-surface p-5">
         <div className="flex items-center justify-between">
@@ -177,6 +170,7 @@ export function History() {
             <button
               type="button"
               onClick={() => setYear(year + 1)}
+              disabled={year >= new Date().getFullYear()}
               aria-label={t("history.nextYear")}
               className="text-muted"
             >
@@ -185,7 +179,7 @@ export function History() {
           </div>
         </div>
         <div className="mt-3">
-          <YearHeatmap
+          {yearDays.isPending ? <Skeleton /> : yearDays.isError ? <QueryError error={yearDays.error} retry={() => void yearDays.refetch()} /> : <YearHeatmap
             year={year}
             days={yearDays.data ?? []}
             selected={selected}
@@ -193,7 +187,7 @@ export function History() {
               setSelected(date);
               closeForm();
             }}
-          />
+          />}
         </div>
       </section>
 
@@ -208,6 +202,12 @@ export function History() {
             </span>
           )}
         </div>
+        <label className="mt-3 block text-sm text-muted">
+          {t("history.selectDate")}
+          <input type="date" value={selected} max={today}
+            onChange={(event) => { if (event.target.value) { setSelected(event.target.value); setYear(Number(event.target.value.slice(0, 4))); } }}
+            className="mt-1 w-full rounded-xl border border-muted/30 bg-bg p-3 text-text" />
+        </label>
         {selectedDay && selectedDay.sleep_minutes > 0 ? (
           <p className="mt-1 text-sm text-muted">
             {formatDuration(t, selectedDay.sleep_minutes)}
@@ -222,6 +222,17 @@ export function History() {
           <p className="mt-1 text-sm text-muted">{t("history.noSleep")}</p>
         )}
 
+        <button
+          type="button"
+          onClick={() => setSummaryDate(selected)}
+          className="mt-3 w-full rounded-2xl border border-primary/50 py-2.5 text-sm font-medium text-primary"
+        >
+          {t("day.summaryButton")}
+        </button>
+
+        {daySessions.isPending && <Skeleton />}
+        {daySessions.isError && <QueryError error={daySessions.error} retry={() => void daySessions.refetch()} />}
+        {remove.isError && <p role="alert" className="text-danger">{t("common.error")}</p>}
         <ul className="mt-2 divide-y divide-muted/10">
           {daySessions.data?.map((session) => (
             <SessionRow
@@ -229,7 +240,7 @@ export function History() {
               session={session}
               locale={locale}
               onEdit={() => startEditing(session)}
-              onDelete={() => deleteSession(session)}
+              onDelete={() => void deleteSession(session)}
             />
           ))}
         </ul>
@@ -247,21 +258,24 @@ export function History() {
       </section>
 
       <section className="rounded-3xl bg-surface p-5">
-        <p className="font-medium">{t("history.recent")}</p>
+        <p className="font-medium">{t("history.entries")}</p>
+        {recent.isPending && <Skeleton />}
+        {recent.isError && !recent.data && <QueryError error={recent.error} retry={() => void recent.refetch()} />}
+        {recent.isSuccess && recentRows.length === 0 && <p className="mt-2 text-sm text-muted">{t("history.noSleep")}</p>}
         <ul className="mt-2 divide-y divide-muted/10">
-          {recent.data
-            ?.filter((session) => session.ended_at !== null)
-            .map((session) => (
+          {recentRows.map((session) => (
               <SessionRow
                 key={session.id}
                 session={session}
                 locale={locale}
                 onEdit={() => startEditing(session)}
-                onDelete={() => deleteSession(session)}
+                onDelete={() => void deleteSession(session)}
               />
             ))}
         </ul>
+        <EntryPager kind="sleep" query={recent} />
       </section>
+      {summaryDate && <DaySummarySheet date={summaryDate} onClose={() => setSummaryDate(null)} />}
     </main>
   );
 }
@@ -283,7 +297,7 @@ function SessionRow({
       <div className="min-w-0">
         <p className="text-sm">
           {session.local_date
-            ? formatDate(session.local_date, locale, { day: "numeric", month: "short" })
+            ? formatDate(session.local_date, locale, { day: "numeric", month: "short", year: "numeric" })
             : "—"}{" "}
           <span className="text-muted">{formatDuration(t, session.duration_minutes ?? 0)}</span>
           {session.is_nap && <span className="ml-1 text-xs text-muted">· {t("sleep.nap")}</span>}

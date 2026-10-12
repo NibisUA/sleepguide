@@ -26,6 +26,7 @@ def evening_reminder_day(
     reminder_time: time | None,
     last_sent_date: date | None,
     has_open_session: bool,
+    catchup: timedelta = EVENING_CATCHUP,
 ) -> date | None:
     """Local date to mark as "sent" if the evening reminder is due now, else None.
 
@@ -38,7 +39,7 @@ def evening_reminder_day(
     today = now.astimezone(tz).date()
     for day in (today, today - timedelta(days=1)):
         scheduled = datetime.combine(day, reminder_time, tzinfo=tz).astimezone(UTC)
-        if scheduled <= now < scheduled + EVENING_CATCHUP:
+        if scheduled <= now < scheduled + catchup:
             return None if last_sent_date == day else day
     return None
 
