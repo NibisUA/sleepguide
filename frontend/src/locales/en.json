@@ -1,7 +1,10 @@
 {
   "common": {
     "loading": "Loading…",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "duration": {
     "hm": "{{h}}h {{m}}m",
@@ -10,7 +13,8 @@
   "nav": {
     "home": "Home",
     "history": "History",
-    "settings": "Settings"
+    "settings": "Settings",
+    "insights": "Insights"
   },
   "home": {
     "title": "SleepGuide"
@@ -76,7 +80,34 @@
     "recent": "Recent records",
     "prevYear": "Previous year",
     "nextYear": "Next year",
-    "addForDay": "＋ Add sleep for this day"
+    "addForDay": "＋ Add sleep for this day",
+    "selectDate": "Choose a day",
+    "period": "History period",
+    "ranges": {
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days",
+      "all": "All time"
+    },
+    "entries": "Sleep entries in this period",
+    "moreCategory": "Load more: {{category}}",
+    "categories": {
+      "sleep": "sleep",
+      "workout": "workouts",
+      "stress": "stress",
+      "screen": "screen time"
+    },
+    "dailyPoints": "Each point is one day. Scroll long charts to see earlier dates.",
+    "groupedPoints": "Each point spans up to {{n}} days. Summaries include every entry.",
+    "emptyPeriod": "No entries in this period yet.",
+    "chartRegion": "History chart; scroll for earlier dates",
+    "oldScreen": "Data older than a year can be viewed and deleted.",
+    "bucketNotes": {
+      "sleep": "Average sleep and Score over logged days in each block of up to {{n}} days.",
+      "workout": "Total minutes of completed workouts in each block of up to {{n}} days.",
+      "stress": "Mean of all ratings and the maximum in each block of up to {{n}} days.",
+      "screen": "Mean over logged days in each block of up to {{n}} days; missing days are not zeros."
+    }
   },
   "settings": {
     "title": "Settings",
@@ -97,5 +128,451 @@
     "eveningReminder": "Evening bedtime reminder",
     "morningReminder": "Morning reminder",
     "morningReminderHint": "A silent message if your sleep is still running."
+  },
+  "workout": {
+    "title": "Workout",
+    "start": "▶️ Start workout",
+    "inProgress": "Workout in progress",
+    "startedAt": "Started: {{time}}",
+    "finish": "🏁 Finish",
+    "type": "Type",
+    "intensity": "Intensity",
+    "types": {
+      "gym": "Gym",
+      "home": "Home",
+      "running": "Running",
+      "football": "Football",
+      "walking": "Walking",
+      "other": "Other"
+    },
+    "intensities": {
+      "easy": "Easy",
+      "moderate": "Moderate",
+      "hard": "Hard",
+      "very_hard": "Very hard"
+    },
+    "endTitle": "When did you finish?",
+    "endHint": "This workout has been running for over 6 hours. Tell us when it actually ended.",
+    "confirm": "Confirm",
+    "discard": "Discard workout",
+    "discardConfirm": "Discard the current workout? The record will be deleted.",
+    "invalidTime": "The end must be after the start, not in the future, and the workout must last at least a minute.",
+    "invalidRange": "The end must be later than the start.",
+    "tooLong": "A workout cannot be longer than 6 hours.",
+    "overlap": "This record overlaps another workout.",
+    "add": "➕ Add workout",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteConfirm": "Delete this workout and all its exercise results? Records and streaks will be recalculated.",
+    "formTitle": "Log workout",
+    "formEditTitle": "Edit workout",
+    "startedAtLabel": "Start",
+    "endedAtLabel": "End",
+    "durationPreview": "Duration: {{duration}}",
+    "historyTitle": "Workouts",
+    "chartTitle": "Training time per day",
+    "totalCount": "Workouts",
+    "totalTime": "Total time",
+    "noWorkouts": "No workouts in this period yet."
+  },
+  "stress": {
+    "title": "Stress",
+    "question": "How stressed are you right now?",
+    "levels": {
+      "1": "Very low",
+      "2": "Low",
+      "3": "Moderate",
+      "4": "High",
+      "5": "Very high"
+    },
+    "saved": "Saved: {{level}} of 5",
+    "undo": "Undo",
+    "categoryHint": "Reason (optional)",
+    "categories": {
+      "university": "University",
+      "work": "Work",
+      "relationships": "Relationships",
+      "money": "Money",
+      "sleep": "Sleep",
+      "training": "Training",
+      "personal": "Personal",
+      "other": "Other"
+    },
+    "today": "Today, average",
+    "count": "{{n}} records",
+    "noToday": "No ratings today yet",
+    "historyTitle": "Stress",
+    "add": "➕ Add entry",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteConfirm": "Delete this stress record?",
+    "formTitle": "Add entry",
+    "formEditTitle": "Edit entry",
+    "levelLabel": "Level (1 — very low, 5 — very high)",
+    "timeLabel": "Time",
+    "invalidTime": "The time cannot be in the future.",
+    "avg": "Average",
+    "peak": "Peak",
+    "records": "Records",
+    "chartTitle": "Average stress per day (the tick is the day's peak)",
+    "chartScale": "scale 1–5",
+    "noLogs": "No records in this period.",
+    "noCategory": "No reason"
+  },
+  "screen": {
+    "title": "Screen Time",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "addToday": "Log today",
+    "addYesterday": "Log yesterday",
+    "otherDay": "Another day",
+    "formTitle": "Screen time for a day",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "hoursShort": "h",
+    "minutesShort": "min",
+    "dateLabel": "Day",
+    "totalLabel": "Total for the day (iPhone: Settings → Screen Time)",
+    "beforeBedLabel": "Of that, in the 2 hours before bed (estimate)",
+    "beforeBedHint": "Optional. At most 2 hours and never more than the total.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "invalidUsage": "Pre-bed time cannot exceed 2 hours or the daily total.",
+    "invalidDate": "Pick a day that is not in the future and not older than a year.",
+    "invalidTotal": "Enter the total time: hours and minutes (minutes below 60, at most 24 hours in total).",
+    "beforeBedShort": "before bed {{duration}}",
+    "historyTitle": "Screen Time",
+    "add": "➕ Add a day",
+    "avgTotal": "Daily average",
+    "avgBed": "Average before bed",
+    "daysLogged": "Days with data",
+    "chartTitle": "Screen time per day (amber = before bed)",
+    "noRecords": "No data in this period.",
+    "viaShortcut": "via Shortcuts",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete the data for this day?",
+    "legendTotal": "Total",
+    "legendBed": "Before bed"
+  },
+  "integrations": {
+    "title": "Integrations (iOS Shortcuts)",
+    "hint": "A token lets Shortcuts automations start and stop sleep and send Screen Time. It works only for those actions and acts like a password: never share it.",
+    "labelPlaceholder": "Name (e.g. iPhone)",
+    "create": "Create",
+    "createdTitle": "Token created",
+    "createdWarning": "Copy it now: it will not be shown again.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "done": "Done",
+    "noTokens": "No tokens yet.",
+    "createdOn": "created {{date}}",
+    "lastUsed": "Last used: {{when}}",
+    "neverUsed": "never used",
+    "revoke": "Revoke",
+    "revokeConfirm": "Revoke the token “{{label}}”? Shortcuts using it will stop working.",
+    "tooMany": "Limit reached: at most 10 active tokens. Revoke the ones you no longer need.",
+    "usageTitle": "Shortcuts endpoints",
+    "usageHint": "Step-by-step instructions are in shortcuts/README.md in the repository."
+  },
+  "day": {
+    "sleep": "Sleep",
+    "workouts": "Workouts",
+    "stress": "Stress",
+    "screen": "Screen Time",
+    "noSleep": "No sleep logged for this day.",
+    "noWorkouts": "No workouts.",
+    "noStress": "No stress ratings.",
+    "noScreen": "Screen time not logged.",
+    "workoutCount": "{{n}} workouts",
+    "stressPeak": "peak {{max}}",
+    "previous": "Previous day",
+    "next": "Next day",
+    "close": "Close",
+    "openToday": "Open today's summary",
+    "summaryButton": "📋 Day summary",
+    "tileWorkout": "Workout",
+    "tileStress": "Stress",
+    "tileScreen": "Screen"
+  },
+  "quick": {
+    "open": "Quick add",
+    "title": "What do you want to log?",
+    "sleep": "Sleep",
+    "sleepHint": "Start, finish or add a past one",
+    "workout": "Workout",
+    "workoutHint": "Timer, type, intensity",
+    "stress": "Stress",
+    "stressHint": "One tap, 1 to 5",
+    "screen": "Screen Time",
+    "screenHint": "Hours for the day"
+  },
+  "insights": {
+    "title": "Insights",
+    "locked": "Insights unlock after {{n}} nights of data",
+    "ready": "There is enough data to analyze",
+    "progress": "{{done}} nights logged; {{total}} needed",
+    "willLook": "Patterns we look for",
+    "topics": {
+      "screen": "Screen time before bed and sleep duration",
+      "workout": "Workouts and sleep duration",
+      "stress": "Stress and the Sleep Score",
+      "bedtime": "Bedtime and the score"
+    },
+    "note": "These are observations about your own data, not a diagnosis or a proven cause.",
+    "basedOn": "Based on {{n}} nights",
+    "latest": "Latest insight",
+    "comparison": "How we compared",
+    "groups": "Group: {{group_days}} nights, average {{group_average}} {{unit}}. Reference: {{reference_days}} nights, average {{reference_average}} {{unit}}.",
+    "window": "Last {{n}} days. At least {{minimum}} nights in each group.",
+    "paired": "Nights with records for the preceding day: screen — {{screen}}, stress — {{stress}}.",
+    "noPatterns": "No clear patterns yet. Keep logging: each group needs enough data and a difference of at least 20 minutes of sleep or 8 Score points.",
+    "types": {
+      "screen_sleep": "Screen time and sleep",
+      "workout_sleep": "Workouts and sleep",
+      "stress_score": "Stress and Sleep Score",
+      "bedtime_score": "Bedtime window"
+    },
+    "messages": {
+      "screen_lower": "After days with {{threshold}} minutes or more of pre-bed screen time, your sleep averages {{difference}} minutes less than after days with less screen time.",
+      "screen_higher": "After days with {{threshold}} minutes or more of pre-bed screen time, your sleep averages {{difference}} minutes more than after days with less screen time.",
+      "workout_higher": "On nights after a logged workout, your sleep averages {{difference}} minutes more than after days without a logged workout.",
+      "workout_lower": "On nights after a logged workout, your sleep averages {{difference}} minutes less than after days without a logged workout.",
+      "stress_lower": "After days with average stress of {{threshold}} or higher, your Sleep Score averages {{difference}} points less than after lower-stress days.",
+      "stress_higher": "After days with average stress of {{threshold}} or higher, your Sleep Score averages {{difference}} points more than after lower-stress days.",
+      "bedtime_higher": "When you go to bed between {{from}} and {{to}}, your Sleep Score averages {{difference}} points more than at other times."
+    },
+    "minutes": "min",
+    "points": "Score points"
+  },
+  "privacy": {
+    "settingsTitle": "Privacy and my data",
+    "title": "Privacy policy",
+    "updated": "Updated October 12, 2026",
+    "draft": "Draft for owner review. Before beta release, complete the contact details, legal basis and actual retention rules.",
+    "ownerMissing": "Service owner: not specified yet",
+    "contactMissing": "Contact for questions and requests: not specified yet",
+    "back": "Back to the app",
+    "export": "Download my data",
+    "exportHint": "The JSON file contains your profile, all records and integration metadata. Keep it private. Passwords and token secrets are excluded.",
+    "exportReady": "File prepared. If Telegram did not save it, open the app in a browser and download again.",
+    "delete": "Delete account and data",
+    "deleteTitle": "Delete all my data?",
+    "deleteWarning": "This deletes your profile, sleep, workouts, exercises and their results, stress, screen time and insights. Reminders will stop and all Shortcuts tokens will stop working. You cannot undo this in the app. Backup copies expire through rotation.",
+    "confirm": "I understand the consequences and want to delete my account and all records.",
+    "deleteForever": "Confirm deletion",
+    "deletedTitle": "Account deleted",
+    "deletedBody": "Your data has been removed from the live database. You can close the app. The button below creates a new empty account.",
+    "restart": "Start again",
+    "policy": {
+      "data": {
+        "title": "Data stored",
+        "body": "Telegram ID, language, time zone, sleep preferences and reminder settings. Sleep times, workouts, stress ratings, screen-time records and personal insights. Integration metadata includes a label, prefix, token hash and use/revocation dates. Full tokens are not stored after creation. Exercise data includes names, weights, repetitions, distances and times. Records and streaks are calculated from history.\nOptional morning restedness ratings and Sleep Score snapshots are used to evaluate the formula. Weekly targets and pattern reminder preferences are also stored."
+      },
+      "purpose": {
+        "title": "Purpose",
+        "body": "To maintain your history, calculate Sleep Score, find personal patterns and send enabled reminders. Insights are deterministic observations about your records, not a diagnosis or a proven cause. We also show exercise records and logging streaks."
+      },
+      "sharing": {
+        "title": "Access and sharing",
+        "body": "Records are stored on the service owner’s server. Telegram provides sign-in and delivers bot messages; reminders and /wake responses may contain sleep duration or Score. Hosting providers and infrastructure administrators have technical access for their duties. The code contains no advertising trackers, third-party analytics or transmission of your records to an LLM.\nOCR screenshots are processed locally on the device and are not uploaded to the server. PNG cards are generated locally; you choose the metrics and recipients."
+      },
+      "retention": {
+        "title": "Retention and backups",
+        "body": "Records remain while you use the account or until you delete them. Account deletion clears the live database and token access. The project’s default backup rotation is 14 days; the owner must confirm the actual retention and off-server copies. After restoring an old backup, administrators must reapply deletion requests."
+      },
+      "rights": {
+        "title": "Control over your data",
+        "body": "Settings lets you export all records as JSON, revoke tokens and delete your account with confirmation. Individual records can be edited and deleted in History. Contact the owner below with questions about data, access or backups."
+      },
+      "security": {
+        "title": "Protection",
+        "body": "The app uses HTTPS, verified Telegram sign-in and limited permissions for Shortcuts tokens. Only hashes of those tokens are stored. Exports contain personal data: keep them private and in a protected location."
+      },
+      "contact": {
+        "title": "Owner and contact",
+        "body": "Before a public or beta release, the owner must identify themselves and provide a channel for privacy questions."
+      },
+      "basis": {
+        "title": "Before release",
+        "body": "The owner must determine and describe the legal basis for processing, actual providers/storage regions and rules applicable to users. This draft is not yet a legally reviewed policy."
+      }
+    }
+  },
+  "errors": {
+    "validation_error": "Check the submitted values.",
+    "rate_limited": "Too many requests. Try again shortly.",
+    "account_deleted": "Account deleted.",
+    "unknown_error": "Request failed. Try again.",
+    "not_in_telegram": "Open SleepGuide using the bot button in Telegram.",
+    "not_authenticated": "Reopen the app to sign in.",
+    "invalid_token": "Your session expired. Reopen the app.",
+    "network_error": "Cannot reach the server. Check your connection and try again.",
+    "exercise_not_found": "Exercise not found. Refresh the list.",
+    "exercise_log_not_found": "Result not found. Refresh the list.",
+    "exercise_exists": "An exercise with this name already exists. Choose it or use another name.",
+    "exercise_limit": "Limit reached: 100 exercises.",
+    "exercise_log_limit": "Limit reached: 500 results per workout.",
+    "workout_unfinished": "Finish the workout first.",
+    "exercise_metrics": "The measurements do not match this exercise type.",
+    "exercise_time": "The exercise time exceeds the workout duration. Check or edit the result before shortening the workout.",
+    "invalid_cursor": "The list changed. Refresh history and try again.",
+    "invalid_range": "Check the selected date range."
+  },
+  "records": {
+    "title": "Workout records",
+    "hint": "All time. Results are compared within one exercise; times only at the same distance.",
+    "empty": "Use the Exercises button beside a completed workout to add exercises and results.",
+    "resultsTitle": "Exercise results",
+    "resultsHint": "One entry is one set or one distance effort. Records update automatically after saving.",
+    "noResults": "No results yet.",
+    "resultsButton": "Exercises",
+    "editResult": "Edit result",
+    "addResult": "Add result",
+    "exercise": "Exercise",
+    "choose": "Choose an exercise",
+    "newExercise": "New exercise",
+    "name": "Exercise name",
+    "kind": "Measurement type",
+    "strength": "Strength: weight and reps",
+    "cardio": "Distance and time",
+    "kindHint": "This measurement type applies to every result for this exercise. Create a separate exercise for a different movement.",
+    "weight": "Weight, kg",
+    "reps": "Reps",
+    "bodyweight": "For bodyweight exercises, enter 0 kg. Set volume = added weight × reps.",
+    "distance": "Distance, m",
+    "optionalTime": "Time, optional",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "saveResult": "Save result",
+    "createExercise": "Create exercise",
+    "rename": "Rename",
+    "saveName": "Save name",
+    "deleteLogConfirm": "Delete this result? Records will be recalculated.",
+    "deleteExerciseConfirm": "Delete “{{name}}” and all its results? Workouts will remain and records will be recalculated.",
+    "strengthResult": "{{kg}} kg × {{reps}}",
+    "meters": "{{n}} m",
+    "kilograms": "{{n}} kg",
+    "repetitions": "{{n}} reps",
+    "metrics": {
+      "weight": "Heaviest weight",
+      "reps": "Most reps in one set",
+      "set_volume": "Largest single-set volume, kg × reps",
+      "distance": "Longest distance",
+      "time": "Fastest time at this distance"
+    }
+  },
+  "streaks": {
+    "title": "Logging streaks",
+    "days": "{{n}} days",
+    "best": "Longest: {{n}} days",
+    "start": "Each day with a log builds a fuller history.",
+    "todayDone": "Today already has a log.",
+    "todayOpen": "Your streak continues. You still have today to add a log.",
+    "details": "Category streaks and rules",
+    "rules": "Each day counts once, regardless of log count. Sleep counts completed main sleep on the wake-up date; workouts count completed sessions on the start date; stress and screen time use their recorded day. Yesterday’s streak stays active until today ends. This measures logging consistency and does not recommend daily training.",
+    "kinds": {
+      "sleep": "Sleep",
+      "workout": "Workouts",
+      "stress": "Stress",
+      "screen": "Screen time"
+    }
+  },
+  "personal": {
+    "baselines": {
+      "title": "Your usual rhythm",
+      "hint": "7 completed days compared with the preceding 28. A difference needs 3 and 14 observed days.",
+      "recent": "Last 7 days",
+      "baseline": "Baseline 28 days",
+      "sleep": "Sleep per night",
+      "screen": "Screen time per day",
+      "stress": "Stress per day",
+      "workout": "Workout days / week",
+      "vs": "Baseline:",
+      "collecting": "Still collecting data",
+      "sample": "Days: {{recent}} / {{baseline}}",
+      "note": "A description of your records, not a cause of change. Missing observations stay missing. Workouts count logged days; the baseline is scaled to a week."
+    },
+    "goals": {
+      "title": "Weekly goals",
+      "hint": "Days with records, Monday through Sunday. 0 disables a goal. The sleep goal is for keeping a diary, not reaching a score.",
+      "sleep": "Log main sleep",
+      "workout": "Log a workout",
+      "stress": "Check in on stress",
+      "screen": "Log screen time",
+      "off": "Off",
+      "days": "{{n}} days",
+      "daysUnit": "days",
+      "settings": "Change targets in Settings. Each day counts once.",
+      "allOff": "All goals are off."
+    },
+    "awards": {
+      "title": "Achievements",
+      "diary7": "7 diary days",
+      "diary30": "30 diary days",
+      "diary100": "100 diary days",
+      "workouts10": "10 workout days",
+      "workouts50": "50 workout days",
+      "feedback7": "7 morning ratings",
+      "hint": "Achievements reflect current history. Deleting records can change progress. Rest days do not reset accumulated progress."
+    },
+    "feedback": {
+      "title": "How rested did you feel on waking?",
+      "hint": "Rate this particular morning. Optional feedback helps evaluate Sleep Score; workouts do not affect it.",
+      "scale": "1 — not rested at all, 5 — well rested.",
+      "r1": "1 — not rested at all",
+      "r2": "2 — barely rested",
+      "r3": "3 — moderately rested",
+      "r4": "4 — rested",
+      "r5": "5 — well rested",
+      "remove": "Delete morning rating"
+    },
+    "reminder": {
+      "title": "Follow my rhythm",
+      "hint": "30 minutes before your median bedtime: at least 14 nights in the preceding 28 days with a spread of at most 60 minutes. Naps are excluded.",
+      "ready": "Reminder at {{time}} · usual bedtime {{bedtime}}",
+      "collecting": "No stable pattern yet. The fallback time is used if enabled.",
+      "fallback": "Fallback evening time"
+    },
+    "calibration": {
+      "title": "Sleep Score evaluation",
+      "collecting": "Collecting morning ratings",
+      "needs_variation": "More varied observations needed",
+      "ready_for_review": "Ready to review the formula",
+      "progress": "Eligible nights: {{n}} / {{total}}",
+      "excluded": "Excluded: {{stale}} after history/goal changes, {{limited}} with limited data.",
+      "correlation": "Score vs restedness association (ρ): {{n}}",
+      "hint": "Version {{version}}. Last 180 days: at least 28 nights, 3 restedness levels and a Score spread of 5 points. Correlation describes association, not causation. Formula weights remain unchanged until calibration is validated using real data."
+    },
+    "share": {
+      "open": "Create a results card",
+      "privacy": "Choose your metrics. The card contains only selected summaries and dates, without your name or Telegram ID. Sharing requires a click.",
+      "subtitle": "Averages from my personal diary",
+      "sample": "{{n}} days of data",
+      "footer": "Personal diary · SleepGuide",
+      "preview": "Results card preview",
+      "download": "Save PNG",
+      "send": "Share"
+    }
+  },
+  "ocr": {
+    "title": "Import a screenshot",
+    "privacy": "Recognition runs on this device. The image is not sent to the server or stored in your account. Ukrainian and English screenshots are supported.",
+    "language": "Screenshot language",
+    "file": "PNG, JPG or WebP · up to 10 MB",
+    "invalid": "Choose a PNG/JPG/WebP up to 10 MB and 20 megapixels.",
+    "preview": "Selected screen time screenshot",
+    "progress": "Recognizing: {{n}}% · close to cancel",
+    "loading": "Loading recognition…",
+    "noMatch": "No duration found. Try a clearer screenshot or enter time manually.",
+    "failed": "Recognition failed. Try another screenshot or enter time manually.",
+    "choose": "Choose the total for a single day. Weekly averages and individual apps can also appear in the list.",
+    "review": "Review the date and duration before saving. Enter pre-bed usage separately. Screenshot dates are not detected.",
+    "overwrite": "I confirm replacing the existing record for this date.",
+    "overwriteRequired": "Confirm replacement or choose a different date."
   }
 }

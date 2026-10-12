@@ -1,7 +1,9 @@
 import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { QueryError, Skeleton } from "../../components/QueryState";
 import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../../lib/api";
+import { confirmAction } from "../../lib/confirm";
 import { formatDuration, formatTime, toLocalInput } from "../../lib/format";
 import { useNow } from "../../lib/useNow";
 import type { SleepSession } from "../../types/api";
@@ -26,7 +28,7 @@ function PrimaryButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className="mt-4 w-full rounded-2xl bg-primary py-4 text-lg font-semibold text-bg transition active:scale-[0.98] disabled:opacity-60"
+      className="mt-4 w-full rounded-2xl bg-primary py-4 text-lg font-semibold text-on-primary transition active:scale-[0.98] disabled:opacity-60"
     />
   );
 }
@@ -108,12 +110,15 @@ function OpenSession({ session }: { session: SleepSession }) {
         type="button"
         disabled={remove.isPending}
         onClick={() => {
-          if (window.confirm(t("sleep.cancelSessionConfirm"))) remove.mutate(session.id);
+          void confirmAction(t("sleep.cancelSessionConfirm")).then((confirmed) => {
+            if (confirmed) remove.mutate(session.id);
+          });
         }}
         className="mt-3 w-full text-sm text-muted underline disabled:opacity-60"
       >
         {t("sleep.cancelSession")}
       </button>
+      {remove.isError && <p role="alert" className="mt-2 text-sm text-danger">{t("common.error")}</p>}
     </Card>
   );
 }
@@ -154,8 +159,8 @@ export function SleepCard() {
   const update = useUpdateSleep();
   const [mode, setMode] = useState<"none" | "create" | "edit">("none");
 
-  if (current.isPending) return <Card>{t("common.loading")}</Card>;
-  if (current.isError) return <Card>{t("common.error")}</Card>;
+  if (current.isPending) return <Skeleton />;
+  if (current.isError) return <QueryError error={current.error} retry={() => void current.refetch()} />;
   if (current.data) return <OpenSession session={current.data} />;
 
   const last = list.data?.find((session) => session.ended_at !== null);

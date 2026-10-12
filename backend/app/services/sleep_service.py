@@ -15,7 +15,7 @@ from app.services.errors import DomainError
 # by dates, not by a row LIMIT: a LIMIT on an ascending query silently drops the
 # newest sessions, i.e. the very night that is being scored.
 SCORE_CONTEXT_DAYS = 120
-HISTORY_CONTEXT_DAYS = 90
+HISTORY_CONTEXT_DAYS = SCORE_CONTEXT_DAYS
 
 
 @dataclass(frozen=True)
@@ -322,7 +322,12 @@ async def history_days(
         day_score = (
             sleep_score.compute_sleep_score(
                 day,
-                nights,
+                [
+                    night
+                    for night in nights
+                    if night.local_date
+                    >= date.fromordinal(max(1, day.toordinal() - SCORE_CONTEXT_DAYS))
+                ],
                 goal_minutes=user.sleep_goal_minutes,
                 target_bedtime=user.target_bedtime,
                 tz_name=user.timezone,

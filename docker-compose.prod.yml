@@ -5,10 +5,17 @@
 #
 # Run: docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
 
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   db:
     image: postgres:16
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_USER: sleepguide
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
@@ -24,6 +31,7 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    logging: *logging
     environment:
       ENV: prod
       DATABASE_URL: postgresql+asyncpg://sleepguide:${POSTGRES_PASSWORD}@db:5432/sleepguide
@@ -34,6 +42,13 @@ services:
       WEBHOOK_BASE_URL: https://${DOMAIN}
       CORS_ORIGINS: '["https://${DOMAIN}"]'
       DEV_LOGIN_ENABLED: "false"
+      TRUSTED_PROXY_IPS: '["172.30.28.2"]'
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 6s
+      start_period: 30s
+      retries: 3
     depends_on:
       db:
         condition: service_healthy
@@ -44,7 +59,15 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        VITE_PRIVACY_OWNER: ${PRIVACY_OWNER:-}
+        VITE_PRIVACY_CONTACT: ${PRIVACY_CONTACT:-}
+        VITE_PRIVACY_APPROVED: ${PRIVACY_APPROVED:-false}
     restart: unless-stopped
+    logging: *logging
+    networks:
+      default:
+        ipv4_address: 172.30.28.2
     environment:
       DOMAIN: ${DOMAIN:?set DOMAIN in .env.prod}
     ports:
@@ -55,6 +78,12 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.30.28.0/24
 
 volumes:
   pgdata:

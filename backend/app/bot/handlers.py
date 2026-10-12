@@ -65,3 +65,29 @@ async def on_wake_command(message: Message) -> None:
     outcome = await actions.stop_sleep(message.from_user.id, message.from_user.language_code)
     keyboard = open_app_keyboard(outcome.language) if outcome.open_app else None
     await message.answer(outcome.text, reply_markup=keyboard)
+
+
+@router.message(Command("help"))
+async def on_help_command(message: Message) -> None:
+    lang = texts.lang_of(message.from_user.language_code if message.from_user else None)
+    await message.answer(texts.text(lang, "help"), reply_markup=open_app_keyboard(lang))
+
+
+@router.message(Command("privacy"))
+async def on_privacy_command(message: Message) -> None:
+    lang = texts.lang_of(message.from_user.language_code if message.from_user else None)
+    base = get_settings().mini_app_url.rstrip("/")
+    keyboard = (
+        InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text=texts.text(lang, "privacy_button"), url=f"{base}/privacy/{lang}"
+                    )
+                ]
+            ]
+        )
+        if base
+        else None
+    )
+    await message.answer(texts.text(lang, "privacy"), reply_markup=keyboard)

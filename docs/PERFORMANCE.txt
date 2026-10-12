@@ -1,0 +1,36 @@
+=== sleep_sessions: bounded per-user history ===
+Index Scan using ix_sleep_sessions_user_id on sleep_sessions  (cost=0.29..10.08 rows=60 width=63) (actual time=0.029..0.050 rows=60 loops=1)
+  Index Cond: (user_id = '1'::bigint)
+  Filter: ((local_date <= CURRENT_DATE) AND (local_date >= (CURRENT_DATE - 180)))
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=159 dirtied=2
+Planning Time: 4.086 ms
+Execution Time: 0.092 ms
+=== workouts: bounded per-user history ===
+Index Scan using ix_workouts_user_id on workouts  (cost=0.28..9.18 rows=30 width=79) (actual time=0.031..0.041 rows=30 loops=1)
+  Index Cond: (user_id = '1'::bigint)
+  Filter: ((local_date <= CURRENT_DATE) AND (local_date >= (CURRENT_DATE - 180)))
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=90 dirtied=1
+Planning Time: 2.520 ms
+Execution Time: 0.056 ms
+=== stress_logs: bounded per-user history ===
+Index Scan using ix_stress_logs_user_id on stress_logs  (cost=0.29..10.08 rows=60 width=53) (actual time=0.046..0.066 rows=60 loops=1)
+  Index Cond: (user_id = '1'::bigint)
+  Filter: ((local_date <= CURRENT_DATE) AND (local_date >= (CURRENT_DATE - 180)))
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=67 dirtied=1
+Planning Time: 1.994 ms
+Execution Time: 0.083 ms
+=== screen_time_daily: bounded per-user history ===
+Index Scan using ix_screen_time_daily_user_id on screen_time_daily  (cost=0.29..10.08 rows=60 width=51) (actual time=0.022..0.042 rows=60 loops=1)
+  Index Cond: (user_id = '1'::bigint)
+  Filter: ((local_date <= CURRENT_DATE) AND (local_date >= (CURRENT_DATE - 180)))
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=67
+Planning Time: 2.051 ms
+Execution Time: 0.056 ms

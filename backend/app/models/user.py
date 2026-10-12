@@ -17,6 +17,11 @@ class User(Base):
     target_bedtime: Mapped[time | None] = mapped_column(Time, nullable=True)
     reminder_evening_time: Mapped[time | None] = mapped_column(Time, nullable=True)
     reminder_morning_on: Mapped[bool] = mapped_column(Boolean, default=True)
+    reminder_pattern_on: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    weekly_sleep_days: Mapped[int] = mapped_column(Integer, default=5, server_default="5")
+    weekly_workout_days: Mapped[int] = mapped_column(Integer, default=3, server_default="3")
+    weekly_stress_days: Mapped[int] = mapped_column(Integer, default=3, server_default="3")
+    weekly_screen_days: Mapped[int] = mapped_column(Integer, default=3, server_default="3")
     # Idempotency markers for the reminder loop (see app/bot/reminders.py)
     last_evening_reminder_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     last_morning_reminder_at: Mapped[datetime | None] = mapped_column(

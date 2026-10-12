@@ -1,8 +1,13 @@
+import { QueryError, Skeleton } from "../../components/QueryState";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { formatDuration } from "../../lib/format";
+import { IntegrationsSection } from "../integrations/IntegrationsSection";
 import { useMe, useUpdateMe } from "../profile/api";
+import { PrivacySection } from "../privacy/PrivacySection";
+import { GoalsSettings } from "../personal/GoalsSettings";
+import { useBaselines } from "../personal/api";
 
 const GOAL_OPTIONS = [360, 390, 420, 450, 480, 510, 540, 570, 600]; // 6 h .. 10 h
 const DEFAULT_BEDTIME = "23:00";
@@ -19,10 +24,11 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   );
 }
 
-export function Settings() {
+export function Settings({ onDeleted }: { onDeleted: () => void }) {
   const { t, i18n } = useTranslation();
   const me = useMe();
   const update = useUpdateMe();
+  const baselines = useBaselines();
   const user = me.data;
   const [bedtime, setBedtime] = useState("");
   const [evening, setEvening] = useState("");
@@ -37,10 +43,10 @@ export function Settings() {
   }, [user?.reminder_evening_time]);
 
   if (me.isPending) {
-    return <main className="mx-auto max-w-md p-4 text-muted">{t("common.loading")}</main>;
+    return <main className="mx-auto max-w-md p-4"><Skeleton /></main>;
   }
   if (me.isError || !user) {
-    return <main className="mx-auto max-w-md p-4 text-danger">{t("common.error")}</main>;
+    return <main className="mx-auto max-w-md p-4"><QueryError error={me.error} retry={() => void me.refetch()} /></main>;
   }
 
   const goals = GOAL_OPTIONS.includes(user.sleep_goal_minutes)
@@ -53,6 +59,7 @@ export function Settings() {
 
       <Section title={t("settings.sleepGoal")} hint={t("settings.sleepGoalHint")}>
         <select
+          aria-label={t("settings.sleepGoal")}
           value={user.sleep_goal_minutes}
           onChange={(event) => update.mutate({ sleep_goal_minutes: Number(event.target.value) })}
           className="w-full rounded-xl border border-muted/30 bg-bg p-3 text-text"
@@ -71,6 +78,7 @@ export function Settings() {
       >
         <input
           type="time"
+          aria-label={t("settings.targetBedtime")}
           value={bedtime}
           onChange={(event) => {
             const value = event.target.value;
@@ -95,8 +103,16 @@ export function Settings() {
       </Section>
 
       <Section title={t("settings.reminders")} hint={t("settings.remindersHint")}>
+        <label className="mb-4 flex items-center justify-between gap-3">
+          <span>{t("personal.reminder.title")}<span className="mt-1 block text-xs text-muted">{t("personal.reminder.hint")}</span></span>
+          <input type="checkbox" className="h-5 w-5 shrink-0 accent-primary" disabled={update.isPending}
+            checked={user.reminder_pattern_on} onChange={e => update.mutate({ reminder_pattern_on: e.target.checked })} />
+        </label>
+        {user.reminder_pattern_on && <p className="mb-4 rounded-xl bg-bg p-3 text-sm text-primary">
+          {baselines.data?.reminder.time ? t("personal.reminder.ready", { time: baselines.data.reminder.time, bedtime: baselines.data.reminder.bedtime }) : t("personal.reminder.collecting")}
+        </p>}
         <label className="flex items-center justify-between gap-3">
-          <span>{t("settings.eveningReminder")}</span>
+          <span>{user.reminder_pattern_on ? t("personal.reminder.fallback") : t("settings.eveningReminder")}</span>
           <input
             type="checkbox"
             className="h-5 w-5 accent-primary"
@@ -111,6 +127,7 @@ export function Settings() {
         {user.reminder_evening_time !== null && (
           <input
             type="time"
+            aria-label={t("settings.eveningReminder")}
             value={evening}
             onChange={(event) => {
               const value = event.target.value;
@@ -139,6 +156,7 @@ export function Settings() {
           {LANGUAGES.map((language) => (
             <button
               key={language}
+              aria-pressed={i18n.language === language}
               type="button"
               onClick={() => {
                 void i18n.changeLanguage(language);
@@ -155,6 +173,10 @@ export function Settings() {
           ))}
         </div>
       </Section>
+
+      <IntegrationsSection />
+      <GoalsSettings />
+      <PrivacySection onDeleted={onDeleted} />
 
       <Section title={t("settings.timezone")} hint={t("settings.timezoneHint")}>
         <p className="text-sm">{user.timezone}</p>

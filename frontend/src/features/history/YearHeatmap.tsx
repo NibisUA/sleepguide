@@ -1,11 +1,12 @@
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { formatDate, formatDuration, isoDate } from "../../lib/format";
 import { heatmapColor } from "../../lib/score";
 import type { SleepDay } from "../../types/api";
 
-const CELL = 10;
-const GAP = 2;
+const CELL = 24;
+const GAP = 3;
 
 interface Cell {
   date: string;
@@ -44,6 +45,15 @@ export function YearHeatmap({
   const byDate = new Map(days.map((day) => [day.date, day]));
   const cells = buildCells(year, byDate);
   const weeks = Math.ceil(cells.length / 7);
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const now = new Date();
+    const target = year === now.getFullYear() ? isoDate(new Date(year, now.getMonth(), 1)) : `${year}-01-01`;
+    const index = cells.findIndex(cell => cell.date === target);
+    if (scroller.current && index >= 0) {
+      scroller.current.scrollLeft = Math.max(0, 24 + Math.floor(index / 7) * (CELL + GAP) - 24);
+    }
+  }, [year]);
 
   const weekdayLabels = Array.from({ length: 7 }, (_, index) =>
     new Date(2024, 0, 1 + index).toLocaleDateString(locale, { weekday: "short" }),
@@ -68,7 +78,7 @@ export function YearHeatmap({
 
   return (
     <div>
-      <div className="overflow-x-auto pb-1">
+      <div ref={scroller} className="overflow-x-auto pb-1">
         <div className="relative" style={{ width: 24 + weeks * (CELL + GAP) }}>
           <div className="relative h-4">
             {months.map((month) => (
@@ -102,9 +112,12 @@ export function YearHeatmap({
                 <button
                   key={cell.date}
                   type="button"
+                  data-heatmap="true"
                   onClick={() => onSelect(cell.date)}
                   title={label(cell)}
                   aria-label={label(cell)}
+                  aria-pressed={selected === cell.date}
+                  disabled={!cell.inYear || cell.date > isoDate(new Date())}
                   style={{
                     width: CELL,
                     height: CELL,

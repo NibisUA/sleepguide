@@ -1,10 +1,10 @@
 from datetime import UTC, date, datetime, timedelta
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import sleep_rules
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_user_or_api_token, record_source
 from app.core.db import get_session
 from app.models import SleepSession, User
 from app.schemas.sleep import (
@@ -25,15 +25,17 @@ HISTORY_MAX_DAYS = 366
 
 @router.post("/start", response_model=SleepSessionOut)
 async def start_sleep(
-    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
+    request: Request,
+    user: User = Depends(get_user_or_api_token),
+    session: AsyncSession = Depends(get_session),
 ) -> SleepSession:
-    return await sleep_service.start_sleep(session, user)
+    return await sleep_service.start_sleep(session, user, source=record_source(request))
 
 
 @router.post("/stop", response_model=SleepSessionOut)
 async def stop_sleep(
     body: SleepStopIn | None = None,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_user_or_api_token),
     session: AsyncSession = Depends(get_session),
 ) -> SleepSession:
     return await sleep_service.stop_sleep(session, user, ended_at=body.ended_at if body else None)

@@ -18,6 +18,13 @@ TEXTS: dict[str, dict[str, str]] = {
         "duration_m": "{m} хв",
         "cmd_sleep": "Почати сон",
         "cmd_wake": "Я прокинувся",
+        "cmd_help": "Як користуватися",
+        "cmd_privacy": "Приватність і мої дані",
+        "help": "SleepGuide: /sleep — почати сон, /wake — завершити. У застосунку: історія, тренування, стрес, екранний час та інсайти. Експорт і видалення акаунта — у Налаштуваннях. /privacy — політика приватності.",
+        "privacy": "Твої записи використовуються для історії та особистих інсайтів. У Налаштуваннях можна завантажити дані, відкликати токени й видалити акаунт. Політика приватності — за кнопкою нижче.",
+        "privacy_button": "Політика приватності",
+        "description": "SleepGuide допомагає вести сон, тренування, стрес і екранний час та бачити особисті закономірності. Дані можна експортувати й видалити в Налаштуваннях. Почни з /help.",
+        "short_description": "Сон, тренування, стрес та особисті закономірності. Експорт і видалення даних у застосунку.",
     },
     "en": {
         "evening": "🌙 Time to wind down. Tap the button when you go to bed.",
@@ -36,12 +43,19 @@ TEXTS: dict[str, dict[str, str]] = {
         "duration_m": "{m}m",
         "cmd_sleep": "Start sleep",
         "cmd_wake": "I woke up",
+        "cmd_help": "How to use SleepGuide",
+        "cmd_privacy": "Privacy and my data",
+        "help": "SleepGuide: /sleep starts sleep, /wake finishes it. The app includes history, workouts, stress, screen time and insights. Export and account deletion are in Settings. /privacy opens the privacy policy.",
+        "privacy": "Your records support your history and personal insights. Settings lets you download data, revoke tokens and delete your account. Read the privacy policy using the button below.",
+        "privacy_button": "Privacy policy",
+        "description": "SleepGuide tracks sleep, workouts, stress and screen time and shows personal patterns. You can export or delete your data in Settings. Start with /help.",
+        "short_description": "Track sleep, workouts, stress and personal patterns. Export and delete data in the app.",
     },
 }
 
 
 def lang_of(code: str | None) -> str:
-    return "uk" if code == "uk" else "en"
+    return "uk" if (code or "").lower().startswith("uk") else "en"
 
 
 def text(lang: str, key: str, **kwargs: object) -> str:

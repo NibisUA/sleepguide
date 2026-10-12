@@ -1,5 +1,13 @@
 {$DOMAIN} {
 	encode zstd gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Strict-Transport-Security "max-age=31536000"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://telegram.org; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; base-uri 'self'; form-action 'self'"
+		-Server
+	}
 
 	@backend path /api/* /telegram/webhook /health
 	handle @backend {

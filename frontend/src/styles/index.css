@@ -4,10 +4,12 @@
   --color-bg: #06110d;
   --color-surface: #0d1a15;
   --color-primary: #21d890;
+  --color-on-primary: #06110d;
   --color-text: #f5f7f6;
-  --color-muted: #71817a;
+  --color-muted: #94a69d;
   --color-warning: #e5a63a;
   --color-danger: #d94a4a;
+  --color-danger-button: #b42318;
 }
 
 html,
@@ -16,11 +18,23 @@ body,
   min-height: 100%;
 }
 
+html { color-scheme: dark; }
+
 body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-top: max(env(safe-area-inset-top, 0px), var(--app-safe-top, 0px));
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--app-safe-bottom, 0px));
+}
+
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+button, input, select { touch-action: manipulation; }
+button, a { -webkit-tap-highlight-color: transparent; }
+input, select { font-size: 16px; }
+nav button { min-height: 44px; }
+button:not([data-heatmap]) { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

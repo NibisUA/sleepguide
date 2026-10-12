@@ -1,5 +1,11 @@
 # SleepGuide — Product & Development Plan (v2)
 
+> **Стан 12.10.2026:** поточний обсяг і правила — у [RELEASE.md](RELEASE.md) та [STATUS.md](STATUS.md).
+> Цей v2-план є історичним. Після Phase 11 додані рекорди вправ і серії записів:
+> [RECORDS_AND_STREAKS.md](RECORDS_AND_STREAKS.md). Heatmap та інсайти вже існують,
+> API-типи генеруються. Решта пост-MVP ідей відкладена.
+> Історія 90/ALL та пагінація також реалізовані: [HISTORY_RANGES.md](HISTORY_RANGES.md).
+
 > Telegram Mini App + Backend (FastAPI) + iOS Shortcuts integration
 
 ## Changelog v1 → v2

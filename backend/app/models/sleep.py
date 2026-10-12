@@ -37,6 +37,7 @@ class SleepSession(Base):
     )
 
     __table_args__ = (
+        Index("ix_sleep_sessions_user_local_date", "user_id", "local_date"),
         # At most one open session per user.
         Index(
             "ux_sleep_one_open_per_user",
