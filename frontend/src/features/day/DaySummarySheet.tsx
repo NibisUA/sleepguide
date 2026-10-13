@@ -10,6 +10,7 @@ import type { DaySummary } from "../../types/api";
 import { INTENSITY_COLOR, TYPE_ICON } from "../workout/meta";
 import { useDaySummary } from "./api";
 import { FeedbackCard } from "../personal/FeedbackCard";
+import { CategoryBreakdown } from "../screentime/CategoryBreakdown";
 
 function Section({ icon, title, children }: { icon: string; title: string; children: ReactNode }) {
   return (
@@ -117,6 +118,7 @@ function ScreenPart({ summary }: { summary: DaySummary }) {
   const record = summary.screen_time;
   if (!record) return <Empty text={t("day.noScreen")} />;
   return (
+    <>
     <p className="text-sm">
       <span className="text-2xl font-semibold">{formatDuration(t, record.total_minutes)}</span>
       {record.before_bed_minutes !== null && (
@@ -127,6 +129,8 @@ function ScreenPart({ summary }: { summary: DaySummary }) {
       )}
       {record.source === "shortcut" && <span className="text-muted"> · {t("screen.viaShortcut")}</span>}
     </p>
+    <CategoryBreakdown total={record.total_minutes} categories={record} />
+    </>
   );
 }
 

@@ -966,6 +966,10 @@ export interface components {
             status: "ready" | "duplicate" | "error";
             /** Code */
             code?: string | null;
+            /** Categories */
+            categories?: {
+                [key: string]: number | null;
+            } | null;
         };
         /** DataExportOut */
         DataExportOut: {
@@ -1419,6 +1423,12 @@ export interface components {
             total_minutes: number;
             /** Before Bed Minutes */
             before_bed_minutes: number | null;
+            /** Social Minutes */
+            social_minutes?: number | null;
+            /** Entertainment Minutes */
+            entertainment_minutes?: number | null;
+            /** Games Minutes */
+            games_minutes?: number | null;
             /** Source */
             source: string;
             /**
@@ -1449,6 +1459,12 @@ export interface components {
             total_minutes: number;
             /** Before Bed Minutes */
             before_bed_minutes?: number | null;
+            /** Social Minutes */
+            social_minutes?: number | null;
+            /** Entertainment Minutes */
+            entertainment_minutes?: number | null;
+            /** Games Minutes */
+            games_minutes?: number | null;
         };
         /** ScreenTimeOut */
         ScreenTimeOut: {
@@ -1461,6 +1477,12 @@ export interface components {
             total_minutes: number;
             /** Before Bed Minutes */
             before_bed_minutes: number | null;
+            /** Social Minutes */
+            social_minutes?: number | null;
+            /** Entertainment Minutes */
+            entertainment_minutes?: number | null;
+            /** Games Minutes */
+            games_minutes?: number | null;
             /** Source */
             source: string;
             /**

@@ -7,6 +7,7 @@ import { addDays, formatDuration, isoDate } from "../../lib/format";
 import type { ScreenTime } from "../../types/api";
 import { usePutScreenTime, useScreenTimeRange } from "./api";
 import { ScreenTimeForm } from "./ScreenTimeForm";
+import { CategoryBreakdown } from "./CategoryBreakdown";
 
 function Summary({ label, record }: { label: string; record: ScreenTime | undefined }) {
   const { t } = useTranslation();
@@ -49,6 +50,10 @@ export function ScreenTimeCard() {
       <h2 className="font-medium">{t("screen.title")}</h2>
       <Summary label={t("screen.today")} record={todays} />
       <Summary label={t("screen.yesterday")} record={yesterdays} />
+      {(todays ?? yesterdays) && <div className="mt-4 rounded-2xl bg-bg p-3">
+        <p className="text-xs text-muted">{t("screen.categoriesTitle")} · {t(todays ? "screen.today" : "screen.yesterday")}</p>
+        <CategoryBreakdown total={(todays ?? yesterdays)!.total_minutes} categories={(todays ?? yesterdays)!} />
+      </div>}
 
       {formDate === null ? (
         <div className="mt-4 flex gap-2">

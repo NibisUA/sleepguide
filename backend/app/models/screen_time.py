@@ -29,6 +29,9 @@ class ScreenTimeDaily(Base):
     total_minutes: Mapped[int] = mapped_column(Integer)
     # Phone use in the ~2 hours before going to bed (the user's estimate); optional.
     before_bed_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    social_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    entertainment_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    games_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     source: Mapped[str] = mapped_column(String(16), default="manual")  # manual | shortcut
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -38,6 +41,14 @@ class ScreenTimeDaily(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "local_date", name="uq_screen_time_user_local_date"),
         CheckConstraint("total_minutes BETWEEN 0 AND 1440", name="total_range"),
+        CheckConstraint(
+            "(social_minutes IS NULL OR social_minutes BETWEEN 0 AND 1440) AND "
+            "(entertainment_minutes IS NULL OR entertainment_minutes BETWEEN 0 AND 1440) AND "
+            "(games_minutes IS NULL OR games_minutes BETWEEN 0 AND 1440) AND "
+            "COALESCE(social_minutes,0) + COALESCE(entertainment_minutes,0) + "
+            "COALESCE(games_minutes,0) <= total_minutes",
+            name="categories_valid",
+        ),
         CheckConstraint(
             "before_bed_minutes IS NULL OR "
             "(before_bed_minutes BETWEEN 0 AND 120 AND before_bed_minutes <= total_minutes)",

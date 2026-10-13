@@ -7,6 +7,8 @@ import { addDays, isoDate } from "../../lib/format";
 import type { ScreenTime } from "../../types/api";
 import { useScreenTimeRange, type ScreenTimeInput } from "./api";
 import { DurationInput } from "./DurationInput";
+import { categoryDistribution, SCREEN_CATEGORIES, type CategoryField, type ScreenCategories } from "./categories";
+import { CategoryBreakdown } from "./CategoryBreakdown";
 import { lazy, Suspense } from "react";
 const ScreenshotImport = lazy(() => import("./ScreenshotImport").then(m => ({ default: m.ScreenshotImport })));
 
@@ -37,12 +39,15 @@ export function ScreenTimeForm({
     return {
       total: splitMinutes(record ? record.total_minutes : null),
       bed: splitMinutes(record ? record.before_bed_minutes : null),
+      categories: Object.fromEntries(SCREEN_CATEGORIES.map(({ field }) => [field, splitMinutes(record?.[field] ?? null)])) as Record<CategoryField, ReturnType<typeof splitMinutes>>,
     };
   };
 
   const [date, setDate] = useState(initialDate);
   const [total, setTotal] = useState(() => prefill(initialDate).total);
   const [bed, setBed] = useState(() => prefill(initialDate).bed);
+  const [categories, setCategories] = useState(() => prefill(initialDate).categories);
+  const [changedCategories, setChangedCategories] = useState<Set<CategoryField>>(new Set());
   const [localError, setLocalError] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [imported, setImported] = useState(false);
@@ -55,7 +60,7 @@ export function ScreenTimeForm({
   const code = error instanceof ApiError ? error.code : null;
   const message =
     localError ??
-    (code === "invalid_screen_time"
+    (code === "invalid_screen_categories" ? t("screen.categoriesInvalid") : code === "invalid_screen_time"
       ? t("screen.invalidUsage")
       : code === "invalid_date"
         ? t("screen.invalidDate")
@@ -67,6 +72,7 @@ export function ScreenTimeForm({
     setDate(next);
     const values = prefill(next);
     if (!imported) setTotal(values.total);
+    if (!imported) { setCategories(values.categories); setChangedCategories(new Set()); }
     setBed(values.bed);
     setLocalError(null);
     setOverwrite(false);
@@ -75,6 +81,11 @@ export function ScreenTimeForm({
   function submit() {
     const totalMinutes = joinMinutes(total.hours, total.minutes);
     const bedMinutes = joinMinutes(bed.hours, bed.minutes);
+    const categoryMinutes: ScreenCategories = {};
+    for (const { field } of SCREEN_CATEGORIES) {
+      const value = joinMinutes(categories[field].hours, categories[field].minutes);
+      if (value !== null || changedCategories.has(field)) categoryMinutes[field] = value;
+    }
     if (!date) {
       setLocalError(t("screen.invalidDate"));
       return;
@@ -87,18 +98,23 @@ export function ScreenTimeForm({
       setLocalError(t("screen.invalidUsage"));
       return;
     }
+    if (Object.values(categoryMinutes).some(value => value !== null && (!Number.isFinite(value) || value < 0 || value > 1440)) || categoryDistribution(totalMinutes, categoryMinutes).remaining < 0) {
+      setLocalError(t("screen.categoriesInvalid")); return;
+    }
     setLocalError(null);
     if (checkStored && (stored.isPending || stored.isError)) { setLocalError(t(stored.isError ? "common.error" : "common.loading")); return; }
     if (imported && existingRecord && !overwrite) { setLocalError(t("ocr.overwriteRequired")); return; }
-    onSubmit({ date, total_minutes: totalMinutes, before_bed_minutes: bedMinutes });
+    onSubmit({ date, total_minutes: totalMinutes, before_bed_minutes: bedMinutes, ...categoryMinutes });
   }
 
   return (
     <div className="mt-4 rounded-2xl border border-muted/20 p-4">
       <p className="font-medium">{title}</p>
       <button type="button" disabled={busy} onClick={() => setImportOpen(true)} className="mt-3 w-full rounded-xl border border-primary/40 p-3 text-sm text-primary">{t("ocr.title")}</button>
-      {importOpen && <Suspense fallback={<p role="status" className="mt-3 text-muted">{t("ocr.loading")}</p>}><ScreenshotImport onClose={() => setImportOpen(false)} onPick={minutes => {
+      {importOpen && <Suspense fallback={<p role="status" className="mt-3 text-muted">{t("ocr.loading")}</p>}><ScreenshotImport onClose={() => setImportOpen(false)} onPick={(minutes, detected) => {
         setTotal(splitMinutes(minutes)); setImported(true); setOverwrite(false); setImportOpen(false); setLocalError(null);
+        setCategories(Object.fromEntries(SCREEN_CATEGORIES.map(({ field }) => [field, splitMinutes(detected?.[field] ?? null)])) as typeof categories);
+        setChangedCategories(new Set(SCREEN_CATEGORIES.filter(({ field }) => detected?.[field] != null || joinMinutes(categories[field].hours, categories[field].minutes) !== null).map(({ field }) => field)));
       }} /></Suspense>}
       {imported && <p className="mt-3 text-xs text-primary">{t("ocr.review")}</p>}
 
@@ -124,6 +140,18 @@ export function ScreenTimeForm({
           onChange={(hours, minutes) => setTotal({ hours, minutes })}
         />
       </div>
+
+      <p className="mt-4 text-sm font-medium">{t("screen.categoriesTitle")}</p>
+      <p className="mt-1 text-xs text-muted">{t("screen.categoriesHint")}</p>
+      <div className="mt-3 space-y-3">
+        {SCREEN_CATEGORIES.map(({ field, textColor }) => <fieldset key={field}>
+          <legend className={`mb-1 text-sm ${textColor}`}>{t(`screen.categoryLabels.${field}`)}</legend>
+          <DurationInput label={t(`screen.categoryLabels.${field}`)} hours={categories[field].hours} minutes={categories[field].minutes} disabled={busy}
+            onChange={(hours, minutes) => { setCategories(prev => ({ ...prev, [field]: { hours, minutes } })); setChangedCategories(prev => new Set([...prev, field])); setLocalError(null); }} />
+        </fieldset>)}
+      </div>
+      {joinMinutes(total.hours, total.minutes) !== null && Number.isFinite(joinMinutes(total.hours, total.minutes)) && <CategoryBreakdown total={joinMinutes(total.hours, total.minutes)!}
+        categories={Object.fromEntries(SCREEN_CATEGORIES.map(({ field }) => [field, joinMinutes(categories[field].hours, categories[field].minutes)]))} />}
 
       <p className="mt-3 text-sm text-muted">{t("screen.beforeBedLabel")}</p>
       <div className="mt-2">

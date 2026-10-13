@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.analytics import sleep_rules
+from app.analytics import screen_time_rules, sleep_rules
 from app.models import ScreenTimeDaily, SleepSession, StressLog, User, Workout
 from app.schemas.csv_data import CsvImportIn, CsvPreviewOut, CsvRowOut
 from app.schemas.stress import StressCreateIn
@@ -47,6 +47,9 @@ ALIASES = {
     "category": ["category", "категорія"],
     "total_minutes": ["total_minutes", "всього хвилин"],
     "before_bed_minutes": ["before_bed_minutes", "перед сном хвилин"],
+    "social_minutes": ["social_minutes", "social", "соцмережі хвилин"],
+    "entertainment_minutes": ["entertainment_minutes", "entertainment", "розваги хвилин"],
+    "games_minutes": ["games_minutes", "games", "ігри хвилин"],
 }
 HEADERS = {alias: key for key, aliases in ALIASES.items() for alias in aliases}
 
@@ -223,16 +226,27 @@ def make_values(row: dict[str, str], kind: str, timezone: str, now: datetime) ->
         or (before is not None and not 0 <= before <= min(120, total))
     ):
         raise ValueError("csv_screen")
-    return dict(local_date=day, total_minutes=total, before_bed_minutes=before, source="csv")
+    categories = {
+        key: int(row[key]) if row[key] else None
+        for key in screen_time_rules.SCREEN_CATEGORIES
+        if key in row
+    }
+    if not screen_time_rules.valid_categories(total, categories):
+        raise ValueError("invalid_screen_categories")
+    return dict(
+        local_date=day, total_minutes=total, before_bed_minutes=before, source="csv", **categories
+    )
 
 
-def identity(values: dict, kind: str) -> tuple:
+def identity(values: dict, kind: str, category_keys: tuple[str, ...] = ()) -> tuple:
     keys = {
         "sleep": ("started_at", "ended_at"),
         "workout": ("started_at", "ended_at", "type", "intensity"),
         "stress": ("logged_at", "level", "category"),
         "screen": ("local_date", "total_minutes", "before_bed_minutes"),
     }[kind]
+    if kind == "screen":
+        keys += category_keys
     return tuple(values[k] for k in keys)
 
 
@@ -258,7 +272,12 @@ async def import_csv(
         dict((column.name, getattr(row, column.name)) for column in model.__table__.columns)
         for row in await session.scalars(select(model).where(model.user_id == user.id))
     ]
-    seen = {identity(row, body.kind) for row in existing}
+    category_keys = (
+        tuple(key for key in screen_time_rules.SCREEN_CATEGORIES if key in rows[0][1])
+        if body.kind == "screen"
+        else ()
+    )
+    seen = {identity(row, body.kind, category_keys) for row in existing}
     valid, results = [], []
     now = datetime.now(UTC)
     for line, raw in rows:
@@ -266,13 +285,15 @@ async def import_csv(
         try:
             values = make_values(raw, body.kind, user.timezone, now)
             out.date = values["local_date"].isoformat()
+            if body.kind == "screen":
+                out.categories = {key: values[key] for key in category_keys} or None
             out.summary = (
                 f"{values['started_at'].astimezone(ZoneInfo(user.timezone)):%H:%M} → "
                 f"{values['ended_at'].astimezone(ZoneInfo(user.timezone)):%H:%M} · {values['duration_minutes']} min"
                 if body.kind in ("sleep", "workout")
                 else str(values.get("level", values.get("total_minutes")))
             )
-            key = identity(values, body.kind)
+            key = identity(values, body.kind, category_keys)
             if key in seen:
                 out.status, out.code = "duplicate", "csv_duplicate"
             elif any(conflicts(values, old, body.kind) for old in existing + valid):
@@ -289,6 +310,7 @@ async def import_csv(
                 "csv_time",
                 "csv_dst",
                 "csv_screen",
+                "invalid_screen_categories",
                 "invalid_time",
                 "too_long",
             }:
@@ -354,13 +376,19 @@ async def export_csv(session: AsyncSession, user: User, kind: str) -> str:
                 ]
             )
     else:
-        writer.writerow(["Дата", "total_minutes", "before_bed_minutes"])
+        writer.writerow(
+            ["Дата", "total_minutes", "before_bed_minutes", *screen_time_rules.SCREEN_CATEGORIES]
+        )
         for row in rows:
             writer.writerow(
                 [
                     row.local_date.strftime("%d.%m.%Y"),
                     row.total_minutes,
                     row.before_bed_minutes if row.before_bed_minutes is not None else "",
+                    *(
+                        getattr(row, key) if getattr(row, key) is not None else ""
+                        for key in screen_time_rules.SCREEN_CATEGORIES
+                    ),
                 ]
             )
     return "\ufeff" + output.getvalue()

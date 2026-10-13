@@ -23,6 +23,9 @@ export interface ScreenTimeInput {
   date: string; // YYYY-MM-DD, the local day the numbers refer to
   total_minutes: number;
   before_bed_minutes: number | null;
+  social_minutes?: number | null;
+  entertainment_minutes?: number | null;
+  games_minutes?: number | null;
 }
 
 /** Idempotent upsert: saving the same day again replaces it. */

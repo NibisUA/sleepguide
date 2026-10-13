@@ -3411,6 +3411,27 @@
               }
             ],
             "title": "Code"
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories"
           }
         },
         "type": "object",
@@ -4680,6 +4701,39 @@
             ],
             "title": "Before Bed Minutes"
           },
+          "social_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Minutes"
+          },
+          "entertainment_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entertainment Minutes"
+          },
+          "games_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Games Minutes"
+          },
           "source": {
             "type": "string",
             "title": "Source"
@@ -4768,6 +4822,45 @@
               }
             ],
             "title": "Before Bed Minutes"
+          },
+          "social_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1440.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Minutes"
+          },
+          "entertainment_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1440.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entertainment Minutes"
+          },
+          "games_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1440.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Games Minutes"
           }
         },
         "type": "object",
@@ -4797,6 +4890,39 @@
               }
             ],
             "title": "Before Bed Minutes"
+          },
+          "social_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Minutes"
+          },
+          "entertainment_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entertainment Minutes"
+          },
+          "games_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Games Minutes"
           },
           "source": {
             "type": "string",

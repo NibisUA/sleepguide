@@ -33,6 +33,7 @@ ERROR_STATUS = {
     "stress_not_found": 404,
     "invalid_date": 422,
     "invalid_screen_time": 422,
+    "invalid_screen_categories": 422,
     "screen_time_not_found": 404,
     "too_many_tokens": 409,
     "api_token_not_found": 404,

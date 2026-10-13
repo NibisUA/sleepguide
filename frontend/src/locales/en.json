@@ -259,7 +259,17 @@
     "delete": "Delete",
     "deleteConfirm": "Delete the data for this day?",
     "legendTotal": "Total",
-    "legendBed": "Before bed"
+    "legendBed": "Before bed",
+    "categoriesTitle": "Screen time categories",
+    "categoriesHint": "Optional. Copy Social, Entertainment and Games from Screen Time. Blank means unknown; 0 means no use. Before-bed use is part of the total, not an extra category.",
+    "categoryLabels": {
+      "social_minutes": "Social",
+      "entertainment_minutes": "Entertainment",
+      "games_minutes": "Games"
+    },
+    "categoriesOther": "Other",
+    "categoriesUnassigned": "Unassigned",
+    "categoriesInvalid": "Category minutes cannot exceed total screen time. Check hours and minutes or adjust the total."
   },
   "integrations": {
     "title": "Integrations (iOS Shortcuts)",
@@ -458,7 +468,8 @@
     "csv_duplicate": "Already exists — skipped",
     "csv_conflict": "Overlaps another entry, or different data already exists on this date. Correct the row or edit the existing entry.",
     "csv_value": "Check the values and column format in the CSV example.",
-    "csv_timestamp_mismatch": "Date/time differs from the exact export timestamps. To edit these rows, keep visible date/time columns and remove started_at and ended_at (logged_at for stress)."
+    "csv_timestamp_mismatch": "Date/time differs from the exact export timestamps. To edit these rows, keep visible date/time columns and remove started_at and ended_at (logged_at for stress).",
+    "invalid_screen_categories": "Category minutes exceed the total or contain invalid values. Correct the breakdown together with the total."
   },
   "records": {
     "title": "Exercise progress",
@@ -629,7 +640,9 @@
     "choose": "Choose the total for a single day. Weekly averages and individual apps can also appear in the list.",
     "review": "Review the date and duration before saving. Enter pre-bed usage separately. Screenshot dates are not detected.",
     "overwrite": "I confirm replacing the existing record for this date.",
-    "overwriteRequired": "Confirm replacement or choose a different date."
+    "overwriteRequired": "Confirm replacement or choose a different date.",
+    "includeCategories": "Also copy detected categories",
+    "categoriesReview": "Check these values against your image. Categories are suggestions and have not been saved. The total must be at least their sum. Uncheck categories to enter them manually instead."
   },
   "transfer": {
     "title": "CSV import and export",

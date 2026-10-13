@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { api, ApiError } from "../../lib/api";
 import type { components } from "../../types/api.gen";
+import { SCREEN_CATEGORIES } from "../screentime/categories";
+import { formatDuration } from "../../lib/format";
 
 type S = components["schemas"];
 type Kind = S["CsvImportIn"]["kind"];
@@ -11,7 +13,7 @@ const templates: Record<NonNullable<Kind>, string> = {
   sleep: "Дата,Час коли заснув,Час коли прокинувся\n26.09.2026,23:30,07:30\n27.09.2026,01:15,09:00\n",
   workout: "Дата,Початок,Кінець,type,intensity\n26.09.2026,18:00,19:00,gym,moderate\n",
   stress: "Дата,Час,level,category\n26.09.2026,18:00,3,work\n",
-  screen: "Дата,total_minutes,before_bed_minutes\n26.09.2026,240,30\n",
+  screen: "Дата,total_minutes,before_bed_minutes,social_minutes,entertainment_minutes,games_minutes\n26.09.2026,542,30,326,73,53\n",
 };
 
 function download(csv: string, filename: string) {
@@ -82,7 +84,9 @@ export function DataTransferSection({ onImported }: { onImported?: () => void } 
           <thead><tr><th className="p-2">#</th><th className="p-2">{t("transfer.date")}</th><th className="p-2">{t("transfer.result")}</th></tr></thead>
           <tbody>{result.rows.map(row => <tr key={row.line} className="border-t border-muted/10">
             <td className="p-2">{row.line}</td><td className="p-2 whitespace-nowrap">{row.date}</td>
-            <td className={`p-2 ${row.status === "error" ? "text-danger" : row.status === "duplicate" ? "text-muted" : "text-primary"}`}>{row.summary}<span className="block">{row.code ? t(`errors.${row.code}`) : t("transfer.ready")}</span></td>
+            <td className={`p-2 ${row.status === "error" ? "text-danger" : row.status === "duplicate" ? "text-muted" : "text-primary"}`}>{row.summary}
+              {row.categories && <div className="mt-1 space-y-0.5 text-muted">{SCREEN_CATEGORIES.filter(({ field }) => field in row.categories!).map(({ field }) => <p key={field}>{t(`screen.categoryLabels.${field}`)}: {row.categories?.[field] == null ? "—" : formatDuration(t, row.categories[field])}</p>)}</div>}
+              <span className="block">{row.code ? t(`errors.${row.code}`) : t("transfer.ready")}</span></td>
           </tr>)}</tbody></table>
       </div>
       {!save.isSuccess && <button type="button" disabled={busy || result.errors > 0 || result.ready === 0} onClick={() => save.mutate()} className="mt-3 w-full rounded-xl bg-primary py-3 font-semibold text-on-primary disabled:opacity-50">{save.isPending ? t("common.loading") : t("transfer.import", { count: result.ready })}</button>}

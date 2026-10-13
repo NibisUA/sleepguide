@@ -5,6 +5,15 @@ from datetime import date, timedelta
 MAX_TOTAL_MINUTES = 24 * 60
 MAX_BEFORE_BED_MINUTES = 120  # "phone use in the ~2 hours before going to bed"
 MAX_DAYS_BACK = 365
+SCREEN_CATEGORIES = ("social_minutes", "entertainment_minutes", "games_minutes")
+
+
+def valid_categories(total_minutes: int, categories: dict[str, int | None]) -> bool:
+    known = [value for value in categories.values() if value is not None]
+    return (
+        all(type(value) is int and 0 <= value <= 1440 for value in known)
+        and sum(known) <= total_minutes
+    )
 
 
 def is_valid_usage(total_minutes: int, before_bed_minutes: int | None) -> bool:

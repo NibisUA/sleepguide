@@ -27,6 +27,7 @@ async def upsert(
     before_bed_minutes: int | None,
     source: str = "manual",
     now: datetime | None = None,
+    categories: dict[str, int | None] | None = None,
 ) -> ScreenTimeDaily:
     """Create or replace the record of a day (idempotent: a Shortcut may send it twice)."""
     await lock_diary(session, user.id)
@@ -40,6 +41,13 @@ async def upsert(
         )
 
     def apply(row: ScreenTimeDaily) -> None:
+        # Older Shortcuts send only a total: retain breakdown unless explicitly cleared.
+        merged = {key: getattr(row, key) for key in screen_time_rules.SCREEN_CATEGORIES}
+        merged.update(categories or {})
+        if not screen_time_rules.valid_categories(total_minutes, merged):
+            raise DomainError("invalid_screen_categories", "Category minutes cannot exceed the total")
+        for key, value in merged.items():
+            setattr(row, key, value)
         row.total_minutes = total_minutes
         row.before_bed_minutes = before_bed_minutes
         row.source = source

@@ -16,6 +16,7 @@ class CsvRowOut(BaseModel):
     summary: str = ""
     status: Literal["ready", "duplicate", "error"]
     code: str | None = None
+    categories: dict[str, int | None] | None = None
 
 
 class CsvPreviewOut(BaseModel):
