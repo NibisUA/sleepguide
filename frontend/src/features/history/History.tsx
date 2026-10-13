@@ -1,6 +1,9 @@
+import { TrashSection } from "../trash/TrashSection";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "../../components/Modal";
+import { DataTransferSection } from "../transfer/DataTransferSection";
 
 import { DurationBars, ScoreLine } from "../../components/charts";
 import { confirmAction } from "../../lib/confirm";
@@ -36,6 +39,7 @@ export function History() {
   const [editing, setEditing] = useState<SleepSession | null>(null);
   const [creating, setCreating] = useState(false);
   const [summaryDate, setSummaryDate] = useState<string | null>(null);
+  const [transferOpen, setTransferOpen] = useState(false);
 
   const me = useMe();
   const overview = useHistoryOverview(range);
@@ -82,6 +86,7 @@ export function History() {
 
   return (
     <main className="mx-auto max-w-md space-y-4 p-4">
+      <TrashSection />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">{t("history.title")}</h1>
         <button
@@ -95,6 +100,12 @@ export function History() {
           {t("sleep.add")}
         </button>
       </div>
+
+      <button type="button" onClick={() => setTransferOpen(true)} className="min-h-11 text-sm text-primary">{t("transfer.title")}</button>
+      {transferOpen && <Modal title={t("transfer.title")} onClose={() => setTransferOpen(false)}>
+        <DataTransferSection onImported={() => setRange("all")} />
+        <button type="button" onClick={() => setTransferOpen(false)} className="mt-3 min-h-11 w-full text-primary">{t("day.close")}</button>
+      </Modal>}
 
       {(creating || editing) && (
         <section className="rounded-3xl bg-surface p-5">

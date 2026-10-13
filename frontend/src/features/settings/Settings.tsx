@@ -1,3 +1,4 @@
+import { TrashSection } from "../trash/TrashSection";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +9,7 @@ import { useMe, useUpdateMe } from "../profile/api";
 import { PrivacySection } from "../privacy/PrivacySection";
 import { GoalsSettings } from "../personal/GoalsSettings";
 import { useBaselines } from "../personal/api";
+import { DataTransferSection } from "../transfer/DataTransferSection";
 
 const GOAL_OPTIONS = [360, 390, 420, 450, 480, 510, 540, 570, 600]; // 6 h .. 10 h
 const DEFAULT_BEDTIME = "23:00";
@@ -104,6 +106,11 @@ export function Settings({ onDeleted }: { onDeleted: () => void }) {
 
       <Section title={t("settings.reminders")} hint={t("settings.remindersHint")}>
         <label className="mb-4 flex items-center justify-between gap-3">
+          <span>{t("settings.reminderSound")}<span className="mt-1 block text-xs text-muted">{t("settings.reminderSoundHint")}</span></span>
+          <input type="checkbox" className="h-5 w-5 shrink-0 accent-primary" disabled={update.isPending}
+            checked={user.reminder_sound_on} onChange={e => update.mutate({ reminder_sound_on: e.target.checked })} />
+        </label>
+        <label className="mb-4 flex items-center justify-between gap-3">
           <span>{t("personal.reminder.title")}<span className="mt-1 block text-xs text-muted">{t("personal.reminder.hint")}</span></span>
           <input type="checkbox" className="h-5 w-5 shrink-0 accent-primary" disabled={update.isPending}
             checked={user.reminder_pattern_on} onChange={e => update.mutate({ reminder_pattern_on: e.target.checked })} />
@@ -175,6 +182,8 @@ export function Settings({ onDeleted }: { onDeleted: () => void }) {
       </Section>
 
       <IntegrationsSection />
+      <DataTransferSection />
+      <TrashSection />
       <GoalsSettings />
       <PrivacySection onDeleted={onDeleted} />
 

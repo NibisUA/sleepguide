@@ -86,7 +86,7 @@ async def _deliver(session: AsyncSession, bot: Bot, user: User, kind: str) -> bo
             user.telegram_user_id,
             texts.text(lang, kind),
             reply_markup=keyboard,
-            disable_notification=(kind == "morning"),  # a silent nudge must not wake anyone
+            disable_notification=not user.reminder_sound_on,
         )
     except TelegramForbiddenError:
         await _disable_reminders(session, user.id)

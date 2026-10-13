@@ -1,3 +1,4 @@
+import { Templates } from "./Templates";
 import { useState } from "react";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ import {
 } from "./api";
 import { DEFAULT_INTENSITY, DEFAULT_TYPE, FORGOTTEN_WORKOUT_MINUTES, TYPE_ICON } from "./meta";
 import { IntensityPicker, TypePicker } from "./Pickers";
+import { ExerciseLogsSheet } from "../records/ExerciseLogsSheet";
 
 function EndTimePicker({
   busy,
@@ -55,6 +57,7 @@ function Running({ workout }: { workout: Workout }) {
   const now = useNow(1000);
   const stop = useStopWorkout();
   const discard = useDeleteWorkout();
+  const [showSets, setShowSets] = useState((workout.planned_sets?.length ?? 0) > 0);
   const [type, setType] = useState<WorkoutType>(workout.type);
   const [intensity, setIntensity] = useState<WorkoutIntensity>(workout.intensity);
 
@@ -119,6 +122,8 @@ function Running({ workout }: { workout: Workout }) {
         {t("workout.discard")}
       </button>
       {discard.isError && <p role="alert" className="mt-2 text-sm text-danger">{t("common.error")}</p>}
+      <button type="button" onClick={() => setShowSets(true)} className="mt-3 w-full rounded-xl border border-primary/50 py-3 text-primary">{t("records.logDuringWorkout")}</button>
+      {showSets && <ExerciseLogsSheet workout={workout} onClose={() => setShowSets(false)} />}
     </Card>
   );
 }
@@ -140,6 +145,7 @@ function Idle() {
         {t("workout.start")}
       </PrimaryButton>
       {start.isError && <p className="mt-2 text-sm text-danger">{t("common.error")}</p>}
+      <Templates />
     </Card>
   );
 }

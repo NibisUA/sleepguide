@@ -6,11 +6,13 @@ export function DurationInput({
   minutes,
   onChange,
   disabled,
+  label,
 }: {
   hours: string;
   minutes: string;
   onChange: (hours: string, minutes: string) => void;
   disabled?: boolean;
+  label?: string;
 }) {
   const { t } = useTranslation();
   const field =
@@ -26,7 +28,7 @@ export function DurationInput({
         value={hours}
         disabled={disabled}
         placeholder="0"
-        aria-label={t("screen.hours")}
+        aria-label={label ? `${label}: ${t("screen.hours")}` : t("screen.hours")}
         onChange={(event) => onChange(event.target.value, minutes)}
         className={field}
       />
@@ -40,7 +42,7 @@ export function DurationInput({
         value={minutes}
         disabled={disabled}
         placeholder="0"
-        aria-label={t("screen.minutes")}
+        aria-label={label ? `${label}: ${t("screen.minutes")}` : t("screen.minutes")}
         onChange={(event) => onChange(hours, event.target.value)}
         className={field}
       />

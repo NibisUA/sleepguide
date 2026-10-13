@@ -5,6 +5,31 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 beforeEach(() => { vi.resetModules(); sessionStorage.clear(); });
 
 describe("account deletion session boundary", () => {
+  it("emits undo metadata only after a successful diary deletion", async () => {
+    const fetch = vi.fn().mockResolvedValueOnce(json({ access_token: "jwt" }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetch);
+    const listener = vi.fn(); window.addEventListener("diary-deleted", listener);
+    try {
+      const module = await import("./api");
+      await module.api("/screen-time/2026-10-10", { method: "DELETE" });
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect((listener.mock.calls[0][0] as CustomEvent).detail).toEqual({ kind: "screen", recordId: "2026-10-10" });
+    } finally { window.removeEventListener("diary-deleted", listener); }
+  });
+
+  it("does not offer undo when a diary deletion fails", async () => {
+    const fetch = vi.fn().mockResolvedValueOnce(json({ access_token: "jwt" }))
+      .mockResolvedValueOnce(json({ detail: { code: "workout_not_found" } }, 404));
+    vi.stubGlobal("fetch", fetch);
+    const listener = vi.fn(); window.addEventListener("diary-deleted", listener);
+    try {
+      const module = await import("./api");
+      await expect(module.api("/workouts/5", { method: "DELETE" })).rejects.toMatchObject({ code: "workout_not_found" });
+      expect(listener).not.toHaveBeenCalled();
+    } finally { window.removeEventListener("diary-deleted", listener); }
+  });
+
   it("normalizes network failures so mutation cards can show them", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network failed")));
     const module = await import("./api");

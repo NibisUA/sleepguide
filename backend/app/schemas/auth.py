@@ -17,6 +17,7 @@ class UserOut(BaseModel):
     target_bedtime: time | None = None
     reminder_evening_time: time | None = None
     reminder_morning_on: bool = True
+    reminder_sound_on: bool = True
     reminder_pattern_on: bool = False
     weekly_sleep_days: int = 5
     weekly_workout_days: int = 3

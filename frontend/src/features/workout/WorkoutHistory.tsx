@@ -1,3 +1,5 @@
+import { useRepeatWorkout } from "./Templates";
+import { WriteError } from "../records/WriteError";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,6 +27,7 @@ export function WorkoutHistory({ overview }: { overview: HistoryOverview }) {
   const create = useCreateWorkout();
   const update = useUpdateWorkout();
   const remove = useDeleteWorkout();
+  const repeat = useRepeatWorkout();
 
   const [editing, setEditing] = useState<Workout | null>(null);
   const [creating, setCreating] = useState(false);
@@ -42,7 +45,7 @@ export function WorkoutHistory({ overview }: { overview: HistoryOverview }) {
 
   function save(values: WorkoutFormValues) {
     if (editing) update.mutate({ id: editing.id, ...values }, { onSuccess: closeForm });
-    else create.mutate(values, { onSuccess: closeForm });
+    else create.mutate(values, { onSuccess: workout => { closeForm(); setExerciseWorkout(workout); } });
   }
 
   async function deleteWorkout(workout: Workout) {
@@ -132,6 +135,7 @@ export function WorkoutHistory({ overview }: { overview: HistoryOverview }) {
                 </p>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                <button type="button" disabled={repeat.isPending} className="min-h-11 text-primary" onClick={() => repeat.mutate(workout.id, { onSuccess: setExerciseWorkout })}>{t("templates.repeat")}</button>
                 <button type="button" onClick={() => setExerciseWorkout(workout)} className="min-h-11 text-primary">{t("records.resultsButton")}</button>
                 <button
                   type="button"
@@ -157,6 +161,7 @@ export function WorkoutHistory({ overview }: { overview: HistoryOverview }) {
         </ul>
       )}
       <EntryPager kind="workout" query={list} />
+      <WriteError error={repeat.error} />
       {remove.isError && <p role="alert" className="mt-2 text-sm text-danger">{t("common.error")}</p>}
       {exerciseWorkout && <ExerciseLogsSheet workout={exerciseWorkout} onClose={() => setExerciseWorkout(null)} />}
     </section>

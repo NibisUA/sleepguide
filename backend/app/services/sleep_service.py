@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import sleep_rules, sleep_score
 from app.models import SleepSession, User
+from app.services.diary_lock import lock_diary
 from app.services.errors import DomainError
 
 # Extra history fetched before a score/history window so consistency and cold
@@ -42,6 +43,7 @@ async def start_sleep(
     session: AsyncSession, user: User, source: str = "manual", now: datetime | None = None
 ) -> SleepSession:
     """Start a session. Idempotent: if one is already open, return it (Shortcuts may fire twice)."""
+    await lock_diary(session, user.id)
     existing = await get_open_session(session, user.id)
     if existing:
         return existing
@@ -70,6 +72,7 @@ async def stop_sleep(
     raise `wake_time_required`: the client must ask the user when they actually woke up.
     """
     now = now or datetime.now(UTC)
+    await lock_diary(session, user.id)
     sleep = await get_open_session(session, user.id)
     if sleep is None:
         raise DomainError("no_open_session", "There is no sleep session to stop")
@@ -149,6 +152,7 @@ async def create_session(
     """Retroactive entry: a completed sleep the user logged after the fact."""
     now = now or datetime.now(UTC)
     _validate_completed(started_at, ended_at, now)
+    await lock_diary(session, user.id)
     if await _has_overlap(session, user.id, started_at, ended_at):
         raise DomainError("overlap", "This interval overlaps another sleep session")
 
@@ -181,6 +185,7 @@ async def update_session(
     a closed session is never reopened into the open state.
     """
     now = now or datetime.now(UTC)
+    await lock_diary(session, user.id)
     sleep = await get_session(session, user.id, sleep_id)
     new_start = started_at or sleep.started_at
     new_end = ended_at or sleep.ended_at
@@ -205,7 +210,11 @@ async def update_session(
 
 
 async def delete_session(session: AsyncSession, user: User, sleep_id: int) -> None:
+    await lock_diary(session, user.id)
     sleep = await get_session(session, user.id, sleep_id)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "sleep", sleep)
     await session.delete(sleep)
     await session.commit()
 

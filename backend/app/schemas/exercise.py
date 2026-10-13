@@ -59,6 +59,11 @@ class ExerciseLogCreateIn(ExerciseMetricsIn):
     exercise_id: int = Field(gt=0)
 
 
+class ExerciseBatchIn(BaseModel):
+    model_config = {"extra": "forbid"}
+    sets: list[ExerciseLogCreateIn] = Field(min_length=1, max_length=50)
+
+
 class ExerciseLogOut(BaseModel):
     model_config = {"from_attributes": True}
     id: int
@@ -87,3 +92,4 @@ class RecordOut(BaseModel):
 class ExerciseRecordsOut(BaseModel):
     exercise: ExerciseOut
     records: list[RecordOut]
+    rep_bests: list[RecordOut] = Field(default_factory=list)

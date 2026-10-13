@@ -17,6 +17,7 @@ class User(Base):
     target_bedtime: Mapped[time | None] = mapped_column(Time, nullable=True)
     reminder_evening_time: Mapped[time | None] = mapped_column(Time, nullable=True)
     reminder_morning_on: Mapped[bool] = mapped_column(Boolean, default=True)
+    reminder_sound_on: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     reminder_pattern_on: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     weekly_sleep_days: Mapped[int] = mapped_column(Integer, default=5, server_default="5")
     weekly_workout_days: Mapped[int] = mapped_column(Integer, default=3, server_default="3")

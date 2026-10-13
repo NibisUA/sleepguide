@@ -48,6 +48,11 @@ async def put_screen_time(
         body.total_minutes,
         body.before_bed_minutes,
         source=record_source(request),
+        categories={
+            key: value
+            for key, value in body.model_dump(exclude_unset=True).items()
+            if key in ("social_minutes", "entertainment_minutes", "games_minutes")
+        },
     )
 
 

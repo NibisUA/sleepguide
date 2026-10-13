@@ -96,6 +96,11 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   // Close BEFORE resolving the mutation, so cache refreshes and stale requests
   // cannot auto-login and recreate the account that was just erased.
   if (path === "/me" && init?.method === "DELETE") closeSession();
+  if (init?.method === "DELETE") {
+    const match = /^\/(sleep|workouts|stress|screen-time|exercises|exercise-logs)\/([^/]+)$/.exec(path);
+    const kinds: Record<string, string> = { sleep: "sleep", workouts: "workout", stress: "stress", "screen-time": "screen", exercises: "exercise", "exercise-logs": "exercise_log" };
+    if (match) window.dispatchEvent(new CustomEvent("diary-deleted", { detail: { kind: kinds[match[1]], recordId: match[2] } }));
+  }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }

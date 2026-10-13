@@ -10,6 +10,7 @@ import type { HistoryOverview } from "../../types/api";
 import { screenPoints, useHistoryEntries } from "../history/api";
 import { BucketNote, ChartScroll, EntryPager } from "../history/HistoryControls";
 import { ScreenTimeForm } from "./ScreenTimeForm";
+import { CategoryBreakdown } from "./CategoryBreakdown";
 
 export function ScreenTimeHistory({ overview }: { overview: HistoryOverview }) {
   const { t, i18n } = useTranslation();
@@ -100,6 +101,7 @@ export function ScreenTimeHistory({ overview }: { overview: HistoryOverview }) {
                   {formatDate(record.local_date, locale, { day: "numeric", month: "short", year: "numeric" })}
                   {record.source === "shortcut" ? ` · ${t("screen.viaShortcut")}` : ""}
                 </p>
+                <CategoryBreakdown total={record.total_minutes} categories={record} compact />
               </div>
               <div className="flex shrink-0 gap-3 text-sm">
                 <button type="button" disabled={record.local_date < addDays(today, -365)} title={record.local_date < addDays(today, -365) ? t("history.oldScreen") : undefined} onClick={() => setFormDate(record.local_date)} className="text-primary disabled:opacity-50">

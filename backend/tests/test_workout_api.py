@@ -72,7 +72,7 @@ def test_stop_without_a_running_workout_is_404():
 
 
 def test_stop_finishes_the_workout_and_corrects_the_intensity():
-    client = client_with([running_for(45)])
+    client = client_with([running_for(45)], [])
     response = client.post("/api/v1/workouts/stop", json={"intensity": "very_hard"})
     assert response.status_code == 200
     body = response.json()
@@ -90,7 +90,7 @@ def test_stop_after_six_hours_requires_an_explicit_end_time():
 def test_stop_with_an_explicit_time_beyond_six_hours_is_too_long():
     started = datetime.now(UTC) - timedelta(hours=8)
     ended = (started + timedelta(hours=7)).isoformat()
-    client = client_with([workout_row(started_at=started)])
+    client = client_with([workout_row(started_at=started)], [])
     response = client.post("/api/v1/workouts/stop", json={"ended_at": ended})
     assert response.status_code == 422
     assert response.json()["detail"]["code"] == "too_long"
@@ -99,7 +99,7 @@ def test_stop_with_an_explicit_time_beyond_six_hours_is_too_long():
 def test_stop_with_an_explicit_end_time_finishes_a_forgotten_workout():
     started = datetime.now(UTC) - timedelta(hours=8)
     ended = (started + timedelta(minutes=70)).isoformat()
-    client = client_with([workout_row(started_at=started)])
+    client = client_with([workout_row(started_at=started)], [])
     response = client.post("/api/v1/workouts/stop", json={"ended_at": ended})
     assert response.status_code == 200
     assert response.json()["duration_minutes"] == 70
@@ -218,7 +218,7 @@ def test_patch_unknown_workout_is_404():
 
 def test_patch_with_an_end_time_finishes_a_running_workout():
     started = datetime.now(UTC) - timedelta(hours=2)
-    client = client_with([workout_row(started_at=started)], [])
+    client = client_with([workout_row(started_at=started)], [], [])
     ended = (started + timedelta(minutes=50)).isoformat()
     response = client.patch("/api/v1/workouts/7", json={"ended_at": ended})
     assert response.status_code == 200
@@ -227,7 +227,7 @@ def test_patch_with_an_end_time_finishes_a_running_workout():
 
 def test_delete_returns_204_and_removes_the_row():
     row = workout_row(minutes=30)
-    client = client_with([row])
+    client = client_with([row], [])
     response = client.delete("/api/v1/workouts/7")
     assert response.status_code == 204
     assert client.sessions[0].deleted == [row]  # type: ignore[attr-defined]

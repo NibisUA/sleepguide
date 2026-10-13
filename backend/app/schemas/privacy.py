@@ -1,13 +1,14 @@
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.api_token import ApiTokenOut
 from app.schemas.auth import UserOut
 from app.schemas.exercise import ExerciseLogOut, ExerciseOut
 from app.schemas.insight import InsightOut
 from app.schemas.personal import FeedbackExportOut
+from app.schemas.saved import DeletedExportOut, TemplateOut
 from app.schemas.screen_time import ScreenTimeOut
 from app.schemas.sleep import SleepSessionOut
 from app.schemas.stress import StressLogOut
@@ -59,6 +60,8 @@ class DataExportOut(BaseModel):
     exercises: list[ExerciseOut]
     exercise_logs: list[ExerciseLogOut]
     sleep_feedback: list[FeedbackExportOut]
+    workout_templates: list[TemplateOut] = Field(default_factory=list)
+    deleted_entries: list[DeletedExportOut] = Field(default_factory=list)
 
 
 class DeleteMeIn(BaseModel):
