@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import screen_time_rules, sleep_rules
 from app.models import ScreenTimeDaily, User
+from app.services.diary_lock import lock_diary
 from app.services.errors import DomainError
 
 
@@ -28,6 +29,7 @@ async def upsert(
     now: datetime | None = None,
 ) -> ScreenTimeDaily:
     """Create or replace the record of a day (idempotent: a Shortcut may send it twice)."""
+    await lock_diary(session, user.id)
     now = now or datetime.now(UTC)
     today = sleep_rules.local_date_of(now, user.timezone)
     if not screen_time_rules.is_date_in_range(day, today):
@@ -80,6 +82,7 @@ async def list_range(
 
 
 async def delete_day(session: AsyncSession, user: User, day: date) -> None:
+    await lock_diary(session, user.id)
     row = await _find(session, user.id, day)
     if row is None:
         raise DomainError("screen_time_not_found", "No record for this day")

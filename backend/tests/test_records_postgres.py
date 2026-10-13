@@ -272,7 +272,7 @@ def test_duplicate_name_race_kind_mismatch_and_exercise_cascade():
             headers=h[0],
             json={"exercise_id": e["id"], "distance_m": 5000, "duration_seconds": 1800},
         )
-        assert rejected.status_code == 409
+        assert rejected.status_code == 422 and rejected.json()["detail"]["code"] == "exercise_time"
 
     run_check(check)
 

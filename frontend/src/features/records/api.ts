@@ -47,3 +47,7 @@ export function useSaveLog(workoutId: number) {
 export function useDeleteLog() {
   return useMutation({ mutationFn: (id: number) => api<void>(`/exercise-logs/${id}`, { method: "DELETE" }), onSuccess: useInvalidate() });
 }
+export function useSaveSets(workoutId: number) {
+  return useMutation({ mutationFn: (sets: S["ExerciseLogCreateIn"][]) => api<ExerciseLog[]>(`/workouts/${workoutId}/exercises/batch`, {
+    method: "POST", body: JSON.stringify({ sets }) }), onSuccess: useInvalidate() });
+}

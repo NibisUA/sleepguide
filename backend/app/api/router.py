@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api import (
     auth,
+    csv_data,
     days,
     exercises,
     history,
@@ -30,3 +31,4 @@ api_router.include_router(exercises.router)
 api_router.include_router(progress.router)
 api_router.include_router(history.router)
 api_router.include_router(personal.router)
+api_router.include_router(csv_data.router)

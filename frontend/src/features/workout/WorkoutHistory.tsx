@@ -42,7 +42,7 @@ export function WorkoutHistory({ overview }: { overview: HistoryOverview }) {
 
   function save(values: WorkoutFormValues) {
     if (editing) update.mutate({ id: editing.id, ...values }, { onSuccess: closeForm });
-    else create.mutate(values, { onSuccess: closeForm });
+    else create.mutate(values, { onSuccess: workout => { closeForm(); setExerciseWorkout(workout); } });
   }
 
   async function deleteWorkout(workout: Workout) {

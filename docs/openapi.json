@@ -2313,6 +2313,67 @@
         }
       }
     },
+    "/api/v1/workouts/{workout_id}/exercises/batch": {
+      "post": {
+        "tags": [
+          "exercises"
+        ],
+        "summary": "Create Sets",
+        "operationId": "create_sets_api_v1_workouts__workout_id__exercises_batch_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Workout Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExerciseBatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExerciseLogOut"
+                  },
+                  "title": "Response Create Sets Api V1 Workouts  Workout Id  Exercises Batch Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/progress": {
       "get": {
         "tags": [
@@ -2723,6 +2784,151 @@
           }
         }
       }
+    },
+    "/api/v1/data/preview": {
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Preview",
+        "operationId": "preview_api_v1_data_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvImportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvPreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/data/import": {
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Import Data",
+        "operationId": "import_data_api_v1_data_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvImportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvPreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/data/export/{kind}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Export",
+        "operationId": "export_api_v1_data_export__kind__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "sleep",
+                "workout",
+                "stress",
+                "screen"
+              ],
+              "type": "string",
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvExportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3085,6 +3291,135 @@
         ],
         "title": "CalibrationOut"
       },
+      "CsvExportOut": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "csv": {
+            "type": "string",
+            "title": "Csv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "csv"
+        ],
+        "title": "CsvExportOut"
+      },
+      "CsvImportIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "sleep",
+              "workout",
+              "stress",
+              "screen"
+            ],
+            "title": "Kind",
+            "default": "sleep"
+          },
+          "csv": {
+            "type": "string",
+            "maxLength": 1000000,
+            "minLength": 1,
+            "title": "Csv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "csv"
+        ],
+        "title": "CsvImportIn"
+      },
+      "CsvPreviewOut": {
+        "properties": {
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/CsvRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "ready": {
+            "type": "integer",
+            "title": "Ready"
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates"
+          },
+          "errors": {
+            "type": "integer",
+            "title": "Errors"
+          },
+          "imported": {
+            "type": "integer",
+            "title": "Imported",
+            "default": 0
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rows",
+          "ready",
+          "duplicates",
+          "errors",
+          "timezone"
+        ],
+        "title": "CsvPreviewOut"
+      },
+      "CsvRowOut": {
+        "properties": {
+          "line": {
+            "type": "integer",
+            "title": "Line"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "default": ""
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": ""
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "duplicate",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "line",
+          "status"
+        ],
+        "title": "CsvRowOut"
+      },
       "DataExportOut": {
         "properties": {
           "schema_version": {
@@ -3264,6 +3599,25 @@
           "confirm"
         ],
         "title": "DeleteMeIn"
+      },
+      "ExerciseBatchIn": {
+        "properties": {
+          "sets": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseLogCreateIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Sets"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sets"
+        ],
+        "title": "ExerciseBatchIn"
       },
       "ExerciseCreateIn": {
         "properties": {
@@ -3555,6 +3909,13 @@
             },
             "type": "array",
             "title": "Records"
+          },
+          "rep_bests": {
+            "items": {
+              "$ref": "#/components/schemas/RecordOut"
+            },
+            "type": "array",
+            "title": "Rep Bests"
           }
         },
         "type": "object",
@@ -5366,6 +5727,11 @@
             "title": "Reminder Morning On",
             "default": true
           },
+          "reminder_sound_on": {
+            "type": "boolean",
+            "title": "Reminder Sound On",
+            "default": true
+          },
           "reminder_pattern_on": {
             "type": "boolean",
             "title": "Reminder Pattern On",
@@ -5491,6 +5857,11 @@
             "title": "Reminder Morning On",
             "default": true
           },
+          "reminder_sound_on": {
+            "type": "boolean",
+            "title": "Reminder Sound On",
+            "default": true
+          },
           "reminder_pattern_on": {
             "type": "boolean",
             "title": "Reminder Pattern On",
@@ -5598,6 +5969,17 @@
               }
             ],
             "title": "Reminder Morning On"
+          },
+          "reminder_sound_on": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder Sound On"
           },
           "reminder_pattern_on": {
             "anyOf": [

@@ -33,6 +33,8 @@ class FakeSession:
 
     async def execute(self, statement):
         self.statements.append(statement)
+        if "/* diary-write */" in str(statement):
+            return FakeResult([1])
         if not self.results:
             raise AssertionError("Unexpected extra query in FakeSession")
         return FakeResult(self.results.pop(0))
@@ -64,6 +66,7 @@ def default_user() -> User:
         sleep_goal_minutes=480,
         target_bedtime=time(23, 0),
         reminder_morning_on=True,
+        reminder_sound_on=True,
         reminder_pattern_on=False,
         weekly_sleep_days=5,
         weekly_workout_days=3,
@@ -77,8 +80,14 @@ def client_with(*results, user: User | None = None) -> TestClient:
     app.dependency_overrides.clear()
     if user is not None:
         # Unsaved SQLAlchemy objects have not received INSERT defaults yet.
-        for key, value in (("reminder_pattern_on", False), ("weekly_sleep_days", 5),
-                           ("weekly_workout_days", 3), ("weekly_stress_days", 3), ("weekly_screen_days", 3)):
+        for key, value in (
+            ("reminder_sound_on", True),
+            ("reminder_pattern_on", False),
+            ("weekly_sleep_days", 5),
+            ("weekly_workout_days", 3),
+            ("weekly_stress_days", 3),
+            ("weekly_screen_days", 3),
+        ):
             if getattr(user, key) is None:
                 setattr(user, key, value)
     created: list[FakeSession] = []

@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.analytics import sleep_rules, workout_rules
 from app.models import ExerciseLog, User, Workout
 from app.schemas.workout import WorkoutDayOut
+from app.services.diary_lock import lock_diary
 from app.services.errors import DomainError
 
 
@@ -77,6 +78,7 @@ async def start_workout(
     now: datetime | None = None,
 ) -> Workout:
     """Start a workout. Idempotent: if one is already running, return it."""
+    await lock_diary(session, user.id)
     existing = await get_running(session, user.id)
     if existing:
         return existing
@@ -115,6 +117,7 @@ async def stop_workout(
     ask the user when they actually finished.
     """
     now = now or datetime.now(UTC)
+    await lock_diary(session, user.id)
     workout = await get_running(session, user.id)
     if workout is None:
         raise DomainError("no_running_workout", "There is no workout to finish")
@@ -124,6 +127,7 @@ async def stop_workout(
             raise DomainError("end_time_required", "The workout is too old; specify the end time")
         ended_at = now
     _validate_completed(workout.started_at, ended_at, now)
+    await ensure_efforts_fit(session, user.id, workout.id, workout.started_at, ended_at)
 
     _apply_completed(workout, user, workout.started_at, ended_at)
     if type is not None:
@@ -146,6 +150,7 @@ async def create_workout(
     """Retroactive entry: a completed workout the user logged after the fact."""
     now = now or datetime.now(UTC)
     _validate_completed(started_at, ended_at, now)
+    await lock_diary(session, user.id)
     if await _has_overlap(session, user.id, started_at, ended_at):
         raise DomainError("overlap", "This interval overlaps another workout")
 
@@ -171,6 +176,7 @@ async def update_workout(
     Giving a running workout an end time finishes it; a finished workout is never reopened.
     """
     now = now or datetime.now(UTC)
+    await lock_diary(session, user.id)
     workout = await get_workout(session, user.id, workout_id, lock=True)
     new_start = started_at or workout.started_at
     new_end = ended_at or workout.ended_at
@@ -181,10 +187,11 @@ async def update_workout(
         if await _has_overlap(session, user.id, new_start, now, exclude_id=workout.id):
             raise DomainError("overlap", "This interval overlaps another workout")
         workout.started_at = new_start
+        await ensure_efforts_fit(session, user.id, workout.id, new_start, now)
         workout.local_date = sleep_rules.local_date_of(new_start, user.timezone)
     else:
         _validate_completed(new_start, new_end, now)
-        if workout.ended_at is not None and (new_end - new_start) < (
+        if workout.ended_at is None or (new_end - new_start) < (
             workout.ended_at - workout.started_at
         ):
             too_long = await session.execute(
@@ -211,9 +218,26 @@ async def update_workout(
 
 
 async def delete_workout(session: AsyncSession, user: User, workout_id: int) -> None:
+    await lock_diary(session, user.id)
     workout = await get_workout(session, user.id, workout_id, lock=True)
     await session.delete(workout)
     await session.commit()
+
+
+async def ensure_efforts_fit(
+    session: AsyncSession, user_id: int, workout_id: int, start: datetime, end: datetime
+) -> None:
+    result = await session.execute(
+        select(ExerciseLog.id)
+        .where(
+            ExerciseLog.user_id == user_id,
+            ExerciseLog.workout_id == workout_id,
+            ExerciseLog.duration_seconds > (end - start).total_seconds(),
+        )
+        .limit(1)
+    )
+    if result.scalar_one_or_none() is not None:
+        raise DomainError("exercise_time", "Edit the longer exercise result first")
 
 
 async def list_workouts(

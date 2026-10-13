@@ -88,6 +88,8 @@ export function IntegrationsSection() {
   const revoke = useRevokeApiToken();
   const [label, setLabel] = useState("iPhone");
   const [created, setCreated] = useState<ApiTokenCreated | null>(null);
+  const [action, setAction] = useState<"start" | "stop" | "screen">("start");
+  const [urlCopied, setUrlCopied] = useState(false);
 
   const base = `${window.location.origin}/api/v1`;
   const tooMany = create.error instanceof ApiError && create.error.code === "too_many_tokens";
@@ -102,6 +104,7 @@ export function IntegrationsSection() {
     <section className="rounded-3xl bg-surface p-5">
       <h2 className="font-medium">{t("integrations.title")}</h2>
       <p className="mt-1 text-sm text-muted">{t("integrations.hint")}</p>
+      <p className="mt-2 text-sm text-muted">{t("integrations.whatItDoes")}</p>
 
       {created && <NewTokenBox created={created} onDone={() => setCreated(null)} />}
 
@@ -150,6 +153,25 @@ export function IntegrationsSection() {
       )}
       {revoke.isError && <p className="mt-2 text-sm text-danger">{t("common.error")}</p>}
 
+      <details className="mt-4 rounded-2xl bg-bg p-4" open>
+        <summary className="cursor-pointer font-medium">{t("integrations.setupTitle")}</summary>
+        <label className="mt-3 block text-sm text-muted">{t("integrations.action")}<select value={action} onChange={e => { setAction(e.target.value as typeof action); setUrlCopied(false); }} className="mt-1 w-full rounded-xl border border-muted/30 bg-surface p-3 text-text">
+          <option value="start">{t("integrations.actions.start")}</option><option value="stop">{t("integrations.actions.stop")}</option><option value="screen">{t("integrations.actions.screen")}</option>
+        </select></label>
+        <ol className="mt-3 list-decimal space-y-3 pl-5 text-sm text-muted">
+          <li>{t("integrations.steps.token")}</li><li>{t("integrations.steps.new", { name: t(`integrations.actions.${action}`) })}</li>
+          <li>{t("integrations.steps.url")}<code className="mt-1 block select-all break-all text-xs text-text">{action === "screen" ? `${base}/screen-time/YYYY-MM-DD` : `${base}/sleep/${action}`}</code>
+            <button type="button" className="min-h-11 text-primary" onClick={() => void copyText(action === "screen" ? `${base}/screen-time/YYYY-MM-DD` : `${base}/sleep/${action}`).then(setUrlCopied)}>{t(urlCopied ? "integrations.copied" : "integrations.copyUrl")}</button>
+          </li>
+          <li>{t("integrations.steps.request", { method: action === "screen" ? "PUT" : "POST" })}</li>
+          <li>{t("integrations.steps.header")}<code className="mt-1 block select-all text-xs text-text">Authorization: Bearer sg_…</code></li>
+          <li>{t(action === "screen" ? "integrations.steps.screenBody" : "integrations.steps.body")}{action === "screen" && <pre className="mt-2 overflow-auto rounded-lg bg-surface p-2 text-xs">{'{"total_minutes":240,"before_bed_minutes":30}'}</pre>}</li>
+          <li>{t("integrations.steps.test")}</li>
+        </ol>
+        <p className="mt-3 text-xs text-muted">{t("integrations.manualFirst")}</p>
+        <p className="mt-2 text-xs text-muted">{t("integrations.troubleshoot")}</p>
+        <a className="mt-2 inline-block min-h-11 py-2 text-sm text-primary" href="https://support.apple.com/guide/shortcuts/apd58d46713f/ios" target="_blank" rel="noreferrer">{t("integrations.appleGuide")}</a>
+      </details>
       <p className="mt-4 text-sm font-medium">{t("integrations.usageTitle")}</p>
       <pre className="mt-2 overflow-x-auto rounded-xl bg-bg p-3 text-xs leading-relaxed text-muted">
         {`POST ${base}/sleep/start\nPOST ${base}/sleep/stop\nPUT  ${base}/screen-time/YYYY-MM-DD\nAuthorization: Bearer <token>`}

@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.analytics import sleep_rules, stress_rules
 from app.models import StressLog, User
 from app.schemas.stress import StressDayOut
+from app.services.diary_lock import lock_diary
 from app.services.errors import DomainError
 
 
@@ -36,6 +37,7 @@ async def create_log(
 ) -> StressLog:
     now = now or datetime.now(UTC)
     logged_at = logged_at or now
+    await lock_diary(session, user.id)
     _validate_time(logged_at, now)
     log = StressLog(
         user_id=user.id,
@@ -57,6 +59,7 @@ async def update_log(
     now: datetime | None = None,
 ) -> StressLog:
     """Apply a partial edit. `changes` holds only the fields the client sent."""
+    await lock_diary(session, user.id)
     log = await get_log(session, user.id, log_id)
     if changes.get("level") is not None:
         log.level = changes["level"]
@@ -71,6 +74,7 @@ async def update_log(
 
 
 async def delete_log(session: AsyncSession, user: User, log_id: int) -> None:
+    await lock_diary(session, user.id)
     log = await get_log(session, user.id, log_id)
     await session.delete(log)
     await session.commit()

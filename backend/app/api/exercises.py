@@ -5,6 +5,7 @@ from app.api.deps import get_current_user, get_snapshot_user
 from app.core.db import get_session, get_snapshot_session
 from app.models import User
 from app.schemas.exercise import (
+    ExerciseBatchIn,
     ExerciseCreateIn,
     ExerciseLogCreateIn,
     ExerciseLogOut,
@@ -87,6 +88,18 @@ async def update_log(
     session: AsyncSession = Depends(get_session),
 ):
     return await service.update_log(session, user, log_id, body)
+
+
+@router.post(
+    "/workouts/{workout_id}/exercises/batch", response_model=list[ExerciseLogOut], status_code=201
+)
+async def create_sets(
+    body: ExerciseBatchIn,
+    workout_id: int,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    return await service.create_sets(session, user, workout_id, body.sets)
 
 
 @router.delete("/exercise-logs/{log_id}", status_code=204)

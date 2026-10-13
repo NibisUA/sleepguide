@@ -1,6 +1,7 @@
 # SleepGuide
 
-> Phase 11 + рекорди, серії, історія 90/ALL та персональні функції (12.10.2026).
+> Phase 11 + персональні функції, CSV, Shortcuts, звук та журнал підходів (13.10.2026).
+> Останнє оновлення й міграція 0010: [docs/CSV_SHORTCUTS_WORKOUTS.md](docs/CSV_SHORTCUTS_WORKOUTS.md).
 > Актуальні команди, перевірки та кроки перед production: [docs/RELEASE.md](docs/RELEASE.md).
 > Нові функції й міграція 0008: [docs/RECORDS_AND_STREAKS.md](docs/RECORDS_AND_STREAKS.md).
 > Діапазони історії та пагінація: [docs/HISTORY_RANGES.md](docs/HISTORY_RANGES.md).
@@ -9,7 +10,7 @@
 Telegram Mini App for tracking sleep, workouts, stress and screen time, with personal insights.
 Full plan: [docs/product.md](docs/product.md).
 
-**Status:** Phases 1–11, records/streaks, full history, local screenshot OCR, personal baselines, pattern reminders, achievements/weekly goals and shareable PNG cards are available. Morning feedback and an offline calibration evaluator are implemented; empirical calibration awaits real data and weights remain v1.0. 244 backend / 40 frontend tests pass locally. Head 0009, export 1.2. Production release, policy review and real-device checks remain pending. See [docs/STATUS.md](docs/STATUS.md).
+**Status:** Phases 1–11 and personal features are available, plus CSV import/export for all four diaries, in-app Shortcuts setup, reminder sound preferences, live workout sets and repetition records at matching weights. Empirical Sleep Score calibration awaits real data; weights remain v1.0. 272 backend / 46 frontend tests pass locally. Head 0010, export 1.2. The previous head0009 release was deployed on Oracle on October 12; this update still needs deployment and real-device checks. See [docs/STATUS.md](docs/STATUS.md).
 
 ## Stack
 

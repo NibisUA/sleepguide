@@ -46,6 +46,17 @@ it("saves distance in meters and combines minutes and seconds exactly", async ()
   await waitFor(() => expect(mock.api).toHaveBeenCalledWith("/workouts/5/exercises", { method: "POST", body: '{"exercise_id":2,"distance_m":5000,"duration_seconds":1475}' }));
 });
 
+it("saves repeated strength sets atomically instead of making separate requests", async () => {
+  const user = userEvent.setup(); mount();
+  await user.selectOptions(await screen.findByLabelText("Exercise"), "1");
+  await user.type(screen.getByLabelText("Weight, kg"), "60");
+  await user.type(screen.getByLabelText("Reps"), "8");
+  await user.clear(screen.getByLabelText("Number of identical sets"));
+  await user.type(screen.getByLabelText("Number of identical sets"), "3");
+  await user.click(screen.getByRole("button", { name: "Save result" }));
+  await waitFor(() => expect(mock.api).toHaveBeenCalledWith("/workouts/5/exercises/batch", { method: "POST", body: JSON.stringify({ sets: Array.from({ length: 3 }, () => ({ exercise_id: 1, weight_kg: "60", reps: 8 })) }) }));
+});
+
 it("edits an existing result and preserves its exercise", async () => {
   logs = [{ id: 7, workout_id: 5, exercise_id: 1, weight_kg: 60, reps: 8, distance_m: null, duration_seconds: null, created_at: timestamp, updated_at: timestamp }];
   const user = userEvent.setup(); mount();

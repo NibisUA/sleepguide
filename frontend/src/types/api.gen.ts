@@ -569,6 +569,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workouts/{workout_id}/exercises/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Sets */
+        post: operations["create_sets_api_v1_workouts__workout_id__exercises_batch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/progress": {
         parameters: {
             query?: never;
@@ -685,6 +702,57 @@ export interface paths {
         post?: never;
         /** Delete Feedback */
         delete: operations["delete_feedback_api_v1_personal_feedback__day__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/data/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview */
+        post: operations["preview_api_v1_data_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/data/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Data */
+        post: operations["import_data_api_v1_data_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/data/export/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export */
+        get: operations["export_api_v1_data_export__kind__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -841,6 +909,64 @@ export interface components {
              */
             weights_changed: boolean;
         };
+        /** CsvExportOut */
+        CsvExportOut: {
+            /** Filename */
+            filename: string;
+            /** Csv */
+            csv: string;
+        };
+        /** CsvImportIn */
+        CsvImportIn: {
+            /**
+             * Kind
+             * @default sleep
+             * @enum {string}
+             */
+            kind: "sleep" | "workout" | "stress" | "screen";
+            /** Csv */
+            csv: string;
+        };
+        /** CsvPreviewOut */
+        CsvPreviewOut: {
+            /** Rows */
+            rows: components["schemas"]["CsvRowOut"][];
+            /** Ready */
+            ready: number;
+            /** Duplicates */
+            duplicates: number;
+            /** Errors */
+            errors: number;
+            /**
+             * Imported
+             * @default 0
+             */
+            imported: number;
+            /** Timezone */
+            timezone: string;
+        };
+        /** CsvRowOut */
+        CsvRowOut: {
+            /** Line */
+            line: number;
+            /**
+             * Date
+             * @default
+             */
+            date: string;
+            /**
+             * Summary
+             * @default
+             */
+            summary: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ready" | "duplicate" | "error";
+            /** Code */
+            code?: string | null;
+        };
         /** DataExportOut */
         DataExportOut: {
             /**
@@ -903,6 +1029,11 @@ export interface components {
              * @constant
              */
             confirm: true;
+        };
+        /** ExerciseBatchIn */
+        ExerciseBatchIn: {
+            /** Sets */
+            sets: components["schemas"]["ExerciseLogCreateIn"][];
         };
         /** ExerciseCreateIn */
         ExerciseCreateIn: {
@@ -992,6 +1123,8 @@ export interface components {
             exercise: components["schemas"]["ExerciseOut"];
             /** Records */
             records: components["schemas"]["RecordOut"][];
+            /** Rep Bests */
+            rep_bests?: components["schemas"]["RecordOut"][];
         };
         /** ExerciseRenameIn */
         ExerciseRenameIn: {
@@ -1657,6 +1790,11 @@ export interface components {
              */
             reminder_morning_on: boolean;
             /**
+             * Reminder Sound On
+             * @default true
+             */
+            reminder_sound_on: boolean;
+            /**
              * Reminder Pattern On
              * @default false
              */
@@ -1718,6 +1856,11 @@ export interface components {
              */
             reminder_morning_on: boolean;
             /**
+             * Reminder Sound On
+             * @default true
+             */
+            reminder_sound_on: boolean;
+            /**
              * Reminder Pattern On
              * @default false
              */
@@ -1757,6 +1900,8 @@ export interface components {
             reminder_evening_time?: string | null;
             /** Reminder Morning On */
             reminder_morning_on?: boolean | null;
+            /** Reminder Sound On */
+            reminder_sound_on?: boolean | null;
             /** Reminder Pattern On */
             reminder_pattern_on?: boolean | null;
             /** Weekly Sleep Days */
@@ -3372,6 +3517,41 @@ export interface operations {
             };
         };
     };
+    create_sets_api_v1_workouts__workout_id__exercises_batch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExerciseBatchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExerciseLogOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_progress_api_v1_progress_get: {
         parameters: {
             query?: never;
@@ -3602,6 +3782,103 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_data_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvImportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_data_api_v1_data_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvImportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_api_v1_data_export__kind__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "sleep" | "workout" | "stress" | "screen";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvExportOut"];
+                };
             };
             /** @description Validation Error */
             422: {

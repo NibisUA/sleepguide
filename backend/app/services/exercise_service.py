@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -96,8 +98,6 @@ async def locked_workout(session: AsyncSession, user: User, workout_id: int) -> 
     )
     if row is None:
         raise DomainError("workout_not_found", "Workout not found")
-    if row.ended_at is None:
-        raise DomainError("workout_unfinished", "Finish the workout before adding exercise results")
     return row
 
 
@@ -128,7 +128,8 @@ async def create_log(
     validate_kind(exercise, body)
     if (
         body.duration_seconds is not None
-        and body.duration_seconds > (workout.ended_at - workout.started_at).total_seconds()
+        and body.duration_seconds
+        > ((workout.ended_at or datetime.now(UTC)) - workout.started_at).total_seconds()
     ):
         raise DomainError("exercise_time", "An effort cannot be longer than its workout")
     count = await session.scalar(
@@ -164,7 +165,8 @@ async def update_log(
     validate_kind(exercise, body)
     if (
         body.duration_seconds is not None
-        and body.duration_seconds > (workout.ended_at - workout.started_at).total_seconds()
+        and body.duration_seconds
+        > ((workout.ended_at or datetime.now(UTC)) - workout.started_at).total_seconds()
     ):
         raise DomainError("exercise_time", "An effort cannot be longer than its workout")
     for key, value in body.model_dump().items():
@@ -179,6 +181,37 @@ async def delete_log(session: AsyncSession, user: User, log_id: int) -> None:
     row = await get_log(session, user, log_id)
     await session.delete(row)
     await session.commit()
+
+
+async def create_sets(
+    session: AsyncSession, user: User, workout_id: int, sets: list[ExerciseLogCreateIn]
+) -> list[ExerciseLog]:
+    """Save all sets together, or none; supports repeated sets during a workout."""
+    await lock_owner(session, user)
+    workout = await locked_workout(session, user, workout_id)
+    count = await session.scalar(
+        select(func.count())
+        .select_from(ExerciseLog)
+        .where(ExerciseLog.workout_id == workout_id, ExerciseLog.user_id == user.id)
+    )
+    if count + len(sets) > MAX_LOGS_PER_WORKOUT:
+        raise DomainError("exercise_log_limit", "At most 500 results per workout")
+    rows = []
+    for body in sets:
+        exercise = await get_exercise(session, user.id, body.exercise_id)
+        validate_kind(exercise, body)
+        if (
+            body.duration_seconds is not None
+            and body.duration_seconds
+            > ((workout.ended_at or datetime.now(UTC)) - workout.started_at).total_seconds()
+        ):
+            raise DomainError("exercise_time", "An effort cannot be longer than its workout")
+        rows.append(ExerciseLog(user_id=user.id, workout_id=workout_id, **body.model_dump()))
+    session.add_all(rows)
+    await session.commit()
+    for row in rows:
+        await session.refresh(row)
+    return rows
 
 
 async def records(session: AsyncSession, user: User) -> list[ExerciseRecordsOut]:
@@ -199,8 +232,11 @@ async def records(session: AsyncSession, user: User) -> list[ExerciseRecordsOut]
         ("set_volume", log.weight_kg * log.reps, log.weight_kg > 0, False),
         ("distance", log.distance_m, log.distance_m.is_not(None), False),
         ("time", log.duration_seconds, log.duration_seconds.is_not(None), True),
+        ("reps_at_weight", log.reps, log.reps.is_not(None), False),
     ):
         partition = [log.exercise_id, log.distance_m] if metric == "time" else [log.exercise_id]
+        if metric == "reps_at_weight":
+            partition.append(log.weight_kg)
         ranked = (
             select(
                 log.id.label("id"),
@@ -227,9 +263,14 @@ async def records(session: AsyncSession, user: User) -> list[ExerciseRecordsOut]
             .order_by(log.exercise_id, log.distance_m)
         )
         for row, day, amount in winners:
-            grouped[row.exercise_id].records.append(
+            destination = (
+                grouped[row.exercise_id].rep_bests
+                if metric == "reps_at_weight"
+                else grouped[row.exercise_id].records
+            )
+            destination.append(
                 RecordOut(
-                    metric=metric,
+                    metric="reps" if metric == "reps_at_weight" else metric,
                     value=float(amount),
                     log_id=row.id,
                     workout_id=row.workout_id,

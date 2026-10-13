@@ -21,6 +21,7 @@ type UserPatch = Partial<
     | "target_bedtime"
     | "reminder_evening_time"
     | "reminder_morning_on"
+    | "reminder_sound_on"
     | "reminder_pattern_on"
     | "weekly_sleep_days"
     | "weekly_workout_days"

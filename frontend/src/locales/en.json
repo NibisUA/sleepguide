@@ -127,7 +127,9 @@
     "remindersHint": "Messages arrive in your chat with the bot, with “Start sleep” and “I woke up” buttons. If you block the bot, reminders switch off automatically.",
     "eveningReminder": "Evening bedtime reminder",
     "morningReminder": "Morning reminder",
-    "morningReminderHint": "A silent message if your sleep is still running."
+    "morningReminderHint": "If sleep is still running, the bot reminds you to log waking up. This is not an alarm.",
+    "reminderSound": "Reminder sound",
+    "reminderSoundHint": "Applies to evening and morning messages. Sound also depends on the bot chat, Telegram notification settings and Do Not Disturb."
   },
   "workout": {
     "title": "Workout",
@@ -277,7 +279,29 @@
     "revokeConfirm": "Revoke the token “{{label}}”? Shortcuts using it will stop working.",
     "tooMany": "Limit reached: at most 10 active tokens. Revoke the ones you no longer need.",
     "usageTitle": "Shortcuts endpoints",
-    "usageHint": "Step-by-step instructions are in shortcuts/README.md in the repository."
+    "usageHint": "Step-by-step instructions are in shortcuts/README.md in the repository.",
+    "whatItDoes": "Shortcuts are two iPhone commands: “Going to bed” starts your timer and “Woke up” stops it. Apple Health is not imported automatically.",
+    "setupTitle": "Set up on iPhone",
+    "action": "Command",
+    "actions": {
+      "start": "Going to bed",
+      "stop": "Woke up",
+      "screen": "Log screen time"
+    },
+    "copyUrl": "Copy URL",
+    "steps": {
+      "token": "Create a token above and copy the whole value. It is shown only once. This is your SleepGuide key, not the Telegram bot token.",
+      "new": "Open Shortcuts → + → new shortcut. Name it “{{name}}”.",
+      "url": "Add the URL action with this address:",
+      "request": "Add Get Contents of URL. Expand its options and select the {{method}} method.",
+      "header": "In Headers add Authorization. Its value is Bearer, one space, then the full token you copied:",
+      "body": "Request Body: JSON with no fields ({}). Time is recorded when the shortcut runs.",
+      "screenBody": "Replace YYYY-MM-DD with the date, such as 2026-10-12. Request Body: JSON with numeric total_minutes and before_bed_minutes fields. This is manual entry, not automatic Screen Time access.",
+      "test": "Run the shortcut manually. The response should contain a record with an id, and SleepGuide should show a timer or completed sleep. For screen time, look for the date and minutes."
+    },
+    "manualFirst": "Test Going to bed and Woke up manually first. Then add them to your Home Screen or an automation. Scheduled runs record the execution time; they do not detect actual sleep.",
+    "troubleshoot": "401: check the token / create a new one. 403: the token cannot perform this action. no_open_session: run Going to bed first. wake_time_required: correct your wake-up time in SleepGuide.",
+    "appleGuide": "Apple’s guide to requests in Shortcuts"
   },
   "day": {
     "sleep": "Sleep",
@@ -421,14 +445,27 @@
     "exercise_metrics": "The measurements do not match this exercise type.",
     "exercise_time": "The exercise time exceeds the workout duration. Check or edit the result before shortening the workout.",
     "invalid_cursor": "The list changed. Refresh history and try again.",
-    "invalid_range": "Check the selected date range."
+    "invalid_range": "Check the selected date range.",
+    "csv_headers": "Required columns are missing or repeated. Download the CSV example.",
+    "csv_shape": "Invalid CSV or inconsistent column count.",
+    "csv_empty": "The CSV has no entries.",
+    "csv_limit": "Import up to 2000 entries at a time.",
+    "csv_invalid": "Data changed or contains errors. Preview again; nothing was saved.",
+    "csv_date": "Use DD.MM.YYYY or YYYY-MM-DD for dates.",
+    "csv_time": "Use HH:MM for times, for example 23:30.",
+    "csv_dst": "This local time is skipped or repeated at a daylight saving transition. Supply started_at / ended_at or logged_at with a UTC offset.",
+    "csv_screen": "Check the date and minutes: total 0–1440, before bed 0–120 and no more than the total.",
+    "csv_duplicate": "Already exists — skipped",
+    "csv_conflict": "Overlaps another entry, or different data already exists on this date. Correct the row or edit the existing entry.",
+    "csv_value": "Check the values and column format in the CSV example.",
+    "csv_timestamp_mismatch": "Date/time differs from the exact export timestamps. To edit these rows, keep visible date/time columns and remove started_at and ended_at (logged_at for stress)."
   },
   "records": {
-    "title": "Workout records",
-    "hint": "All time. Results are compared within one exercise; times only at the same distance.",
+    "title": "Exercise progress",
+    "hint": "Records come from sets in completed workouts. Reps are compared at the same weight; time at the same distance.",
     "empty": "Use the Exercises button beside a completed workout to add exercises and results.",
     "resultsTitle": "Exercise results",
-    "resultsHint": "One entry is one set or one distance effort. Records update automatically after saving.",
+    "resultsHint": "Add exercises and sets to this workout. Records update after finishing; each set can be edited separately.",
     "noResults": "No results yet.",
     "resultsButton": "Exercises",
     "editResult": "Edit result",
@@ -464,7 +501,26 @@
       "set_volume": "Largest single-set volume, kg × reps",
       "distance": "Longest distance",
       "time": "Fastest time at this distance"
-    }
+    },
+    "setNumber": "Set {{n}}",
+    "setCount": "Number of identical sets",
+    "repeatHint": "For example, 3 sets of 60 kg × 8. Add sets with different weights separately.",
+    "setSummary": "{{count}} sets · total volume {{volume}} kg × reps",
+    "logDuringWorkout": "Exercises and sets",
+    "bestSet": "Heaviest working set",
+    "longestDistance": "Longest distance",
+    "compareWeight": "Compare reps at weight",
+    "bodyweightLabel": "Bodyweight (0 kg added)",
+    "bestRepsAtWeight": "Most reps at this weight",
+    "fairComparison": "60 kg × 12 and 80 kg × 6 are different results. Only sets at the same weight are compared here.",
+    "fastestAtDistance": "Best time over {{distance}}",
+    "openWorkout": "Open workout",
+    "details": "Other metrics",
+    "manageExercise": "Manage exercise",
+    "search": "Find an exercise",
+    "volumeExplanation": "Set volume = weight × reps. This is not a lifted weight or a 1RM estimate.",
+    "bodyweightResult": "Bodyweight × {{reps}}",
+    "volumeUnit": "{{n}} kg × reps"
   },
   "streaks": {
     "title": "Logging streaks",
@@ -574,5 +630,26 @@
     "review": "Review the date and duration before saving. Enter pre-bed usage separately. Screenshot dates are not detected.",
     "overwrite": "I confirm replacing the existing record for this date.",
     "overwriteRequired": "Confirm replacement or choose a different date."
+  },
+  "transfer": {
+    "title": "CSV import and export",
+    "hint": "Move diary entries from a spreadsheet or download them for Excel / Google Sheets. Imported entries appear in history and summaries.",
+    "kind": "Data type",
+    "dateHint": "Columns: date, bedtime, wake_time. Date means the wake-up day. 2026-09-26,23:30,07:30 means the night of September 25–26. Duration is calculated automatically.",
+    "otherHint": "Download a template for this data type. Times use your profile time zone; workout CSV dates mean the completion day. Export includes all completed entries.",
+    "template": "CSV example",
+    "export": "Export CSV",
+    "exported": "CSV is ready to download.",
+    "file": "Choose CSV",
+    "paste": "Paste CSV text",
+    "fileError": "Use a UTF-8 CSV file up to 1 MB. Select CSV UTF-8 when exporting your spreadsheet.",
+    "preview": "Preview import",
+    "counts": "New: {{ready}} · Duplicates: {{duplicates}} · Errors: {{errors}}",
+    "noOverwrite": "Duplicates are skipped. Existing entries are never overwritten.",
+    "date": "Date",
+    "result": "Entry / check",
+    "ready": "Ready to import",
+    "import": "Import {{count}} entries",
+    "imported": "Saved {{count}} entries to history."
   }
 }
