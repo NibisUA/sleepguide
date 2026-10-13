@@ -2189,7 +2189,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExerciseLogCreateIn"
+                "$ref": "#/components/schemas/ExerciseLogCreateIn-Input"
               }
             }
           }
@@ -2929,6 +2929,324 @@
           }
         }
       }
+    },
+    "/api/v1/workout-templates": {
+      "get": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Templates",
+        "operationId": "templates_api_v1_workout_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TemplateOut"
+                  },
+                  "type": "array",
+                  "title": "Response Templates Api V1 Workout Templates Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Create Template",
+        "operationId": "create_template_api_v1_workout_templates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/workout-templates/{template_id}": {
+      "delete": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Delete Template",
+        "operationId": "delete_template_api_v1_workout_templates__template_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workout-templates/{template_id}/start": {
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Start Template",
+        "operationId": "start_template_api_v1_workout_templates__template_id__start_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkoutOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workouts/{workout_id}/repeat": {
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Repeat Workout",
+        "operationId": "repeat_workout_api_v1_workouts__workout_id__repeat_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Workout Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkoutOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trash": {
+      "get": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Trash",
+        "operationId": "trash_api_v1_trash_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeletedOut"
+                  },
+                  "type": "array",
+                  "title": "Response Trash Api V1 Trash Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/trash/{entry_id}/restore": {
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Restore",
+        "operationId": "restore_api_v1_trash__entry_id__restore_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trash/{entry_id}": {
+      "delete": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Erase",
+        "operationId": "erase_api_v1_trash__entry_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3519,6 +3837,20 @@
             },
             "type": "array",
             "title": "Sleep Feedback"
+          },
+          "workout_templates": {
+            "items": {
+              "$ref": "#/components/schemas/TemplateOut"
+            },
+            "type": "array",
+            "title": "Workout Templates"
+          },
+          "deleted_entries": {
+            "items": {
+              "$ref": "#/components/schemas/DeletedExportOut"
+            },
+            "type": "array",
+            "title": "Deleted Entries"
           }
         },
         "type": "object",
@@ -3621,11 +3953,107 @@
         ],
         "title": "DeleteMeIn"
       },
+      "DeletedExportOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "record_id": {
+            "type": "integer",
+            "title": "Record Id"
+          },
+          "record_key": {
+            "type": "string",
+            "title": "Record Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deleted At"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "record_id",
+          "record_key",
+          "label",
+          "deleted_at",
+          "expires_at",
+          "payload"
+        ],
+        "title": "DeletedExportOut"
+      },
+      "DeletedOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "record_id": {
+            "type": "integer",
+            "title": "Record Id"
+          },
+          "record_key": {
+            "type": "string",
+            "title": "Record Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deleted At"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "record_id",
+          "record_key",
+          "label",
+          "deleted_at",
+          "expires_at"
+        ],
+        "title": "DeletedOut"
+      },
       "ExerciseBatchIn": {
         "properties": {
           "sets": {
             "items": {
-              "$ref": "#/components/schemas/ExerciseLogCreateIn"
+              "$ref": "#/components/schemas/ExerciseLogCreateIn-Input"
             },
             "type": "array",
             "maxItems": 50,
@@ -3663,7 +4091,7 @@
         ],
         "title": "ExerciseCreateIn"
       },
-      "ExerciseLogCreateIn": {
+      "ExerciseLogCreateIn-Input": {
         "properties": {
           "weight_kg": {
             "anyOf": [
@@ -3672,6 +4100,72 @@
                 "maximum": 2000.0,
                 "minimum": 0.0
               },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,4}|(?=[\\d.]{1,7}0*$)\\d{0,4}\\.\\d{0,2}0*$)"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "reps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reps"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 21600.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "exercise_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Exercise Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "exercise_id"
+        ],
+        "title": "ExerciseLogCreateIn"
+      },
+      "ExerciseLogCreateIn-Output": {
+        "properties": {
+          "weight_kg": {
+            "anyOf": [
               {
                 "type": "string",
                 "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,4}|(?=[\\d.]{1,7}0*$)\\d{0,4}\\.\\d{0,2}0*$)"
@@ -5729,6 +6223,82 @@
         ],
         "title": "TelegramLoginIn"
       },
+      "TemplateCreateIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "workout_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Workout Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "workout_id"
+        ],
+        "title": "TemplateCreateIn"
+      },
+      "TemplateOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "gym",
+              "home",
+              "running",
+              "football",
+              "walking",
+              "other"
+            ],
+            "title": "Type"
+          },
+          "intensity": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "moderate",
+              "hard",
+              "very_hard"
+            ],
+            "title": "Intensity"
+          },
+          "sets": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseLogCreateIn-Output"
+            },
+            "type": "array",
+            "title": "Sets"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "intensity",
+          "sets",
+          "created_at"
+        ],
+        "title": "TemplateOut"
+      },
       "TokenExportOut": {
         "properties": {
           "id": {
@@ -6349,6 +6919,13 @@
             "type": "string",
             "title": "Source"
           },
+          "planned_sets": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseLogCreateIn-Output"
+            },
+            "type": "array",
+            "title": "Planned Sets"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -6457,6 +7034,13 @@
           "source": {
             "type": "string",
             "title": "Source"
+          },
+          "planned_sets": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseLogCreateIn-Output"
+            },
+            "type": "array",
+            "title": "Planned Sets"
           }
         },
         "type": "object",

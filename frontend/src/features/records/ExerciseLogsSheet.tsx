@@ -1,22 +1,19 @@
+import { SaveTemplate } from "../workout/Templates";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "../../components/Modal";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { PrimaryButton } from "../../components/ui";
-import { ApiError } from "../../lib/api";
+import { WriteError } from "./WriteError";
 import { confirmAction } from "../../lib/confirm";
 import { formatDate } from "../../lib/format";
+import type { components } from "../../types/api.gen";
 import type { Exercise, ExerciseLog, Workout } from "../../types/api";
 import { useCreateExercise, useDeleteLog, useExerciseLogs, useExercises, useSaveLog, useSaveSets } from "./api";
 import { logText } from "./format";
 
 const inputClass = "mt-1 w-full rounded-xl border border-muted/30 bg-bg p-3 text-text";
-export function WriteError({ error }: { error: unknown }) {
-  const { t, i18n } = useTranslation();
-  if (!error) return null;
-  const key = error instanceof ApiError ? `errors.${error.code}` : "common.error";
-  return <p role="alert" className="mt-3 text-sm text-danger">{i18n.exists(key) ? t(key) : t("common.error")}</p>;
-}
+export { WriteError } from "./WriteError";
 
 export function ExerciseLogsSheet({ workout, onClose }: { workout: Workout; onClose: () => void }) {
   const { t, i18n } = useTranslation();
@@ -43,6 +40,13 @@ export function ExerciseLogsSheet({ workout, onClose }: { workout: Workout; onCl
     setMinutes(log.duration_seconds === null ? "" : String(Math.floor(log.duration_seconds / 60)));
     setSeconds(log.duration_seconds === null ? "" : String(log.duration_seconds % 60)); save.reset();
   }
+  function usePlan(item: components["schemas"]["ExerciseLogCreateIn-Output"]) {
+    clear(); setNewExercise(false); setSelected(String(item.exercise_id));
+    setWeight(item.weight_kg == null ? "" : String(item.weight_kg)); setReps(item.reps == null ? "" : String(item.reps));
+    setDistance(item.distance_m == null ? "" : String(item.distance_m));
+    setMinutes(item.duration_seconds == null ? "" : String(Math.floor(item.duration_seconds / 60)));
+    setSeconds(item.duration_seconds == null ? "" : String(item.duration_seconds % 60));
+  }
   return <Modal title={t("records.resultsTitle")} onClose={() => { if (!busy) onClose(); }}>
     <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-semibold">{t("records.resultsTitle")}</h2>
       <button type="button" disabled={busy} onClick={onClose} className="min-h-11 text-primary">{t("day.close")}</button></div>
@@ -50,6 +54,15 @@ export function ExerciseLogsSheet({ workout, onClose }: { workout: Workout; onCl
     <p className="mt-2 text-sm text-muted">{t("records.resultsHint")}</p>
     {exercises.isPending || logs.isPending ? <Skeleton /> : exercises.isError || logs.isError ?
       <QueryError error={exercises.error ?? logs.error} retry={() => { void exercises.refetch(); void logs.refetch(); }} /> : <>
+      {(workout.planned_sets?.length ?? 0) > 0 && <details open className="mt-3 rounded-xl bg-bg p-3">
+        <summary className="font-medium">{t("templates.planTitle")}</summary><p className="mt-1 text-xs text-muted">{t("templates.planHint")}</p>
+        <ol className="mt-2 divide-y divide-muted/20">{workout.planned_sets?.map((item, index) => <li key={index} className="py-2">
+          <p className="text-sm">{index + 1}. {exercises.data.find(row => row.id === item.exercise_id)?.name ?? t("templates.missing")}</p>
+          <p className="mt-1 text-xs text-muted">{logText({ ...item, weight_kg: item.weight_kg == null ? null : Number(item.weight_kg), reps: item.reps ?? null, distance_m: item.distance_m ?? null, duration_seconds: item.duration_seconds ?? null }, t, i18n.language)}</p>
+          <button type="button" disabled={busy || !exercises.data.some(row => row.id === item.exercise_id)} onClick={() => usePlan(item)} className="min-h-11 text-sm text-primary">{t("templates.useTarget")}</button>
+        </li>)}</ol>
+      </details>}
+      {workout.ended_at && !!logs.data?.length && <SaveTemplate workout={workout} />}
       {logs.data?.length ? <ul className="mt-4 divide-y divide-muted/20">{logs.data.map((log, index) => <li key={log.id} className="py-3">
         <p className="break-words text-sm font-medium">{exercises.data.find(row => row.id === log.exercise_id)?.name}</p>
         <p className="mt-1 text-sm text-muted">{logText(log, t, i18n.language)}</p>

@@ -2,6 +2,7 @@
 
 > Phase 11 + персональні функції, CSV, Shortcuts, звук та журнал підходів (13.10.2026).
 > Останнє оновлення й міграція 0010: [docs/CSV_SHORTCUTS_WORKOUTS.md](docs/CSV_SHORTCUTS_WORKOUTS.md).
+> Шаблони та кошик, міграція 0012: [docs/TEMPLATES_AND_UNDO.md](docs/TEMPLATES_AND_UNDO.md).
 > Категорії екранного часу й міграція 0011: [docs/SCREEN_CATEGORIES.md](docs/SCREEN_CATEGORIES.md).
 > Актуальні команди, перевірки та кроки перед production: [docs/RELEASE.md](docs/RELEASE.md).
 > Нові функції й міграція 0008: [docs/RECORDS_AND_STREAKS.md](docs/RECORDS_AND_STREAKS.md).
@@ -11,7 +12,7 @@
 Telegram Mini App for tracking sleep, workouts, stress and screen time, with personal insights.
 Full plan: [docs/product.md](docs/product.md).
 
-**Status:** Phases 1–11 and personal features are available, plus CSV transfer, in-app Shortcuts setup, reminder sound, live workout sets and screen time categories with local OCR. Empirical Sleep Score calibration awaits real data; weights remain v1.0. 283 backend / 55 frontend tests pass locally. Head 0011, export 1.2. The previous head0009 release was deployed on Oracle on October 12; this update still needs deployment and real-device checks. See [docs/STATUS.md](docs/STATUS.md).
+**Status:** Phases 1–11 and personal features are available, plus CSV transfer, in-app Shortcuts setup, reminder sound, live workout sets and screen time categories with local OCR, saved workout plans and recoverable deletion. Empirical Sleep Score calibration awaits real data; weights remain v1.0. 293 backend / 64 frontend tests pass locally. Head 0012, export 1.2. The previous head0009 release was deployed on Oracle on October 12; this update still needs deployment and real-device checks. See [docs/STATUS.md](docs/STATUS.md).
 
 ## Stack
 

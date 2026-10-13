@@ -1,3 +1,4 @@
+import { UndoNotice } from "../features/trash/TrashSection";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -123,6 +124,7 @@ function Shell() {
           ))}
         </div>
       </nav>
+      <UndoNotice />
       {quickOpen && <QuickAddSheet onPick={pickQuick} onClose={() => setQuickOpen(false)} />}
     </>
   );

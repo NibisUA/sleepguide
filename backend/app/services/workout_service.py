@@ -220,6 +220,9 @@ async def update_workout(
 async def delete_workout(session: AsyncSession, user: User, workout_id: int) -> None:
     await lock_diary(session, user.id)
     workout = await get_workout(session, user.id, workout_id, lock=True)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "workout", workout)
     await session.delete(workout)
     await session.commit()
 

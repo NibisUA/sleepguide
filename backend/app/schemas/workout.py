@@ -1,7 +1,9 @@
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import AwareDatetime, BaseModel
+from pydantic import AwareDatetime, BaseModel, Field, field_validator
+
+from app.schemas.exercise import ExerciseLogCreateIn
 
 WorkoutType = Literal["gym", "home", "running", "football", "walking", "other"]
 WorkoutIntensity = Literal["easy", "moderate", "hard", "very_hard"]
@@ -18,6 +20,12 @@ class WorkoutOut(BaseModel):
     type: WorkoutType
     intensity: WorkoutIntensity
     source: str
+    planned_sets: list[ExerciseLogCreateIn] = Field(default_factory=list)
+
+    @field_validator("planned_sets", mode="before")
+    @classmethod
+    def empty_plan(cls, value):
+        return value or []
 
 
 class WorkoutStartIn(BaseModel):

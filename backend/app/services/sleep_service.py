@@ -212,6 +212,9 @@ async def update_session(
 async def delete_session(session: AsyncSession, user: User, sleep_id: int) -> None:
     await lock_diary(session, user.id)
     sleep = await get_session(session, user.id, sleep_id)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "sleep", sleep)
     await session.delete(sleep)
     await session.commit()
 

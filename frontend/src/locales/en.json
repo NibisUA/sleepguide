@@ -386,7 +386,7 @@
   "privacy": {
     "settingsTitle": "Privacy and my data",
     "title": "Privacy policy",
-    "updated": "Updated October 12, 2026",
+    "updated": "Updated: 13 October 2026",
     "draft": "Draft for owner review. Before beta release, complete the contact details, legal basis and actual retention rules.",
     "ownerMissing": "Service owner: not specified yet",
     "contactMissing": "Contact for questions and requests: not specified yet",
@@ -396,7 +396,7 @@
     "exportReady": "File prepared. If Telegram did not save it, open the app in a browser and download again.",
     "delete": "Delete account and data",
     "deleteTitle": "Delete all my data?",
-    "deleteWarning": "This deletes your profile, sleep, workouts, exercises and their results, stress, screen time and insights. Reminders will stop and all Shortcuts tokens will stop working. You cannot undo this in the app. Backup copies expire through rotation.",
+    "deleteWarning": "This deletes your profile, sleep, workouts, exercises and their results, stress, screen time and insights. Reminders will stop and all Shortcuts tokens will stop working. You cannot undo this in the app. Backup copies expire through rotation. Workout templates and Trash are also erased.",
     "confirm": "I understand the consequences and want to delete my account and all records.",
     "deleteForever": "Confirm deletion",
     "deletedTitle": "Account deleted",
@@ -417,7 +417,7 @@
       },
       "retention": {
         "title": "Retention and backups",
-        "body": "Records remain while you use the account or until you delete them. Account deletion clears the live database and token access. The project’s default backup rotation is 14 days; the owner must confirm the actual retention and off-server copies. After restoring an old backup, administrators must reapply deletion requests."
+        "body": "Records remain while you use the account or until you delete them. Account deletion clears the live database and token access. The project’s default backup rotation is 14 days; the owner must confirm the actual retention and off-server copies. After restoring an old backup, administrators must reapply deletion requests. Individually deleted diary entries, exercises and sets can be restored from Trash for 30 days. Expired entries are cleared the next time Trash is opened; you can also permanently erase them manually. Templates and Trash are erased with the account."
       },
       "rights": {
         "title": "Control over your data",
@@ -469,7 +469,14 @@
     "csv_conflict": "Overlaps another entry, or different data already exists on this date. Correct the row or edit the existing entry.",
     "csv_value": "Check the values and column format in the CSV example.",
     "csv_timestamp_mismatch": "Date/time differs from the exact export timestamps. To edit these rows, keep visible date/time columns and remove started_at and ended_at (logged_at for stress).",
-    "invalid_screen_categories": "Category minutes exceed the total or contain invalid values. Correct the breakdown together with the total."
+    "invalid_screen_categories": "Category minutes exceed the total or contain invalid values. Correct the breakdown together with the total.",
+    "restore_conflict": "Restoration conflicts with current data. Check overlapping times, an entry on the same day, or restore the parent workout / exercise first. This entry remains in Trash.",
+    "deleted_not_found": "This entry was restored or has expired.",
+    "template_empty": "Add results to a completed workout first.",
+    "template_limit": "You can save up to 50 templates.",
+    "workout_running": "Finish the current workout first.",
+    "template_missing_exercise": "An exercise in the plan was deleted. Restore it from Trash or save a new template.",
+    "template_not_found": "This template was deleted."
   },
   "records": {
     "title": "Exercise progress",
@@ -664,5 +671,41 @@
     "ready": "Ready to import",
     "import": "Import {{count}} entries",
     "imported": "Saved {{count}} entries to history."
+  },
+  "templates": {
+    "title": "Workout templates",
+    "hint": "Save a routine from the exercise journal of a finished workout.",
+    "empty": "No templates yet.",
+    "save": "Save as template",
+    "name": "Template name",
+    "start": "Start from template",
+    "repeat": "Repeat workout",
+    "repeatLast": "Repeat last workout",
+    "sets": "Sets / efforts: {{count}}",
+    "all": "Show all templates",
+    "eraseConfirm": "Delete this template? Workout entries will remain.",
+    "planTitle": "Workout plan",
+    "planHint": "These are previous targets. Use them, adjust if needed, and save only the set you actually completed. The plan does not create results or records automatically.",
+    "useTarget": "Use for a new set",
+    "missing": "Deleted exercise"
+  },
+  "trash": {
+    "title": "Trash",
+    "hint": "Restore entries within 30 days. Expired entries are cleared the next time you open Trash. Workouts include exercise results. The latest 200 entries are shown.",
+    "restore": "Restore",
+    "undo": "Undo",
+    "deleted": "Entry deleted",
+    "empty": "Trash is empty",
+    "until": "Restore until {{date}}",
+    "erase": "Delete forever",
+    "eraseConfirm": "Permanently delete this entry? It cannot be restored.",
+    "kinds": {
+      "sleep": "Sleep",
+      "workout": "Workout",
+      "stress": "Stress",
+      "screen": "Screen time",
+      "exercise": "Exercise",
+      "exercise_log": "Set"
+    }
   }
 }

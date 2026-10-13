@@ -86,6 +86,9 @@ async def rename_exercise(
 async def delete_exercise(session: AsyncSession, user: User, exercise_id: int) -> None:
     await lock_owner(session, user)
     row = await get_exercise(session, user.id, exercise_id)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "exercise", row)
     await session.delete(row)
     await session.commit()
 
@@ -179,6 +182,9 @@ async def update_log(
 async def delete_log(session: AsyncSession, user: User, log_id: int) -> None:
     await lock_owner(session, user)
     row = await get_log(session, user, log_id)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "exercise_log", row)
     await session.delete(row)
     await session.commit()
 

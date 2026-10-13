@@ -34,7 +34,9 @@ async def upsert(
     now = now or datetime.now(UTC)
     today = sleep_rules.local_date_of(now, user.timezone)
     if not screen_time_rules.is_date_in_range(day, today):
-        raise DomainError("invalid_date", "The date must be within the last year and not in the future")
+        raise DomainError(
+            "invalid_date", "The date must be within the last year and not in the future"
+        )
     if not screen_time_rules.is_valid_usage(total_minutes, before_bed_minutes):
         raise DomainError(
             "invalid_screen_time", "Pre-bed usage cannot exceed 2 hours or the daily total"
@@ -45,7 +47,9 @@ async def upsert(
         merged = {key: getattr(row, key) for key in screen_time_rules.SCREEN_CATEGORIES}
         merged.update(categories or {})
         if not screen_time_rules.valid_categories(total_minutes, merged):
-            raise DomainError("invalid_screen_categories", "Category minutes cannot exceed the total")
+            raise DomainError(
+                "invalid_screen_categories", "Category minutes cannot exceed the total"
+            )
         for key, value in merged.items():
             setattr(row, key, value)
         row.total_minutes = total_minutes
@@ -94,5 +98,8 @@ async def delete_day(session: AsyncSession, user: User, day: date) -> None:
     row = await _find(session, user.id, day)
     if row is None:
         raise DomainError("screen_time_not_found", "No record for this day")
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "screen", row)
     await session.delete(row)
     await session.commit()

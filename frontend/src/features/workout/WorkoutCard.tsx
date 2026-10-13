@@ -1,3 +1,4 @@
+import { Templates } from "./Templates";
 import { useState } from "react";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useTranslation } from "react-i18next";
@@ -56,7 +57,7 @@ function Running({ workout }: { workout: Workout }) {
   const now = useNow(1000);
   const stop = useStopWorkout();
   const discard = useDeleteWorkout();
-  const [showSets, setShowSets] = useState(false);
+  const [showSets, setShowSets] = useState((workout.planned_sets?.length ?? 0) > 0);
   const [type, setType] = useState<WorkoutType>(workout.type);
   const [intensity, setIntensity] = useState<WorkoutIntensity>(workout.intensity);
 
@@ -144,6 +145,7 @@ function Idle() {
         {t("workout.start")}
       </PrimaryButton>
       {start.isError && <p className="mt-2 text-sm text-danger">{t("common.error")}</p>}
+      <Templates />
     </Card>
   );
 }

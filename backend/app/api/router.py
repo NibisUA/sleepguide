@@ -10,6 +10,7 @@ from app.api import (
     me,
     personal,
     progress,
+    saved,
     screen_time,
     sleep,
     stress,
@@ -32,3 +33,5 @@ api_router.include_router(progress.router)
 api_router.include_router(history.router)
 api_router.include_router(personal.router)
 api_router.include_router(csv_data.router)
+
+api_router.include_router(saved.router)

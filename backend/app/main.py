@@ -19,6 +19,13 @@ from app.core.db import SessionLocal
 from app.services.errors import DomainError
 
 ERROR_STATUS = {
+    "restore_conflict": 409,
+    "deleted_not_found": 404,
+    "template_not_found": 404,
+    "template_empty": 422,
+    "template_limit": 409,
+    "workout_running": 409,
+    "template_missing_exercise": 409,
     "no_open_session": 404,
     "sleep_not_found": 404,
     "wake_time_required": 409,

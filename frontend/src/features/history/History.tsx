@@ -1,3 +1,4 @@
+import { TrashSection } from "../trash/TrashSection";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -85,6 +86,7 @@ export function History() {
 
   return (
     <main className="mx-auto max-w-md space-y-4 p-4">
+      <TrashSection />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">{t("history.title")}</h1>
         <button

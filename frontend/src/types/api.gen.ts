@@ -758,6 +758,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workout-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Templates */
+        get: operations["templates_api_v1_workout_templates_get"];
+        put?: never;
+        /** Create Template */
+        post: operations["create_template_api_v1_workout_templates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workout-templates/{template_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Template */
+        delete: operations["delete_template_api_v1_workout_templates__template_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workout-templates/{template_id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Template */
+        post: operations["start_template_api_v1_workout_templates__template_id__start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workouts/{workout_id}/repeat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Repeat Workout */
+        post: operations["repeat_workout_api_v1_workouts__workout_id__repeat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trash */
+        get: operations["trash_api_v1_trash_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trash/{entry_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore */
+        post: operations["restore_api_v1_trash__entry_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trash/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Erase */
+        delete: operations["erase_api_v1_trash__entry_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1003,6 +1123,10 @@ export interface components {
             exercise_logs: components["schemas"]["ExerciseLogOut"][];
             /** Sleep Feedback */
             sleep_feedback: components["schemas"]["FeedbackExportOut"][];
+            /** Workout Templates */
+            workout_templates?: components["schemas"]["TemplateOut"][];
+            /** Deleted Entries */
+            deleted_entries?: components["schemas"]["DeletedExportOut"][];
         };
         /**
          * DaySummaryOut
@@ -1034,10 +1158,60 @@ export interface components {
              */
             confirm: true;
         };
+        /** DeletedExportOut */
+        DeletedExportOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Record Id */
+            record_id: number;
+            /** Record Key */
+            record_key: string;
+            /** Label */
+            label: string;
+            /**
+             * Deleted At
+             * Format: date-time
+             */
+            deleted_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
+        /** DeletedOut */
+        DeletedOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Record Id */
+            record_id: number;
+            /** Record Key */
+            record_key: string;
+            /** Label */
+            label: string;
+            /**
+             * Deleted At
+             * Format: date-time
+             */
+            deleted_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+        };
         /** ExerciseBatchIn */
         ExerciseBatchIn: {
             /** Sets */
-            sets: components["schemas"]["ExerciseLogCreateIn"][];
+            sets: components["schemas"]["ExerciseLogCreateIn-Input"][];
         };
         /** ExerciseCreateIn */
         ExerciseCreateIn: {
@@ -1050,9 +1224,22 @@ export interface components {
             kind: "strength" | "cardio";
         };
         /** ExerciseLogCreateIn */
-        ExerciseLogCreateIn: {
+        "ExerciseLogCreateIn-Input": {
             /** Weight Kg */
             weight_kg?: number | string | null;
+            /** Reps */
+            reps?: number | null;
+            /** Distance M */
+            distance_m?: number | null;
+            /** Duration Seconds */
+            duration_seconds?: number | null;
+            /** Exercise Id */
+            exercise_id: number;
+        };
+        /** ExerciseLogCreateIn */
+        "ExerciseLogCreateIn-Output": {
+            /** Weight Kg */
+            weight_kg?: string | null;
             /** Reps */
             reps?: number | null;
             /** Distance M */
@@ -1763,6 +1950,37 @@ export interface components {
             /** Init Data */
             init_data: string;
         };
+        /** TemplateCreateIn */
+        TemplateCreateIn: {
+            /** Name */
+            name: string;
+            /** Workout Id */
+            workout_id: number;
+        };
+        /** TemplateOut */
+        TemplateOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "gym" | "home" | "running" | "football" | "walking" | "other";
+            /**
+             * Intensity
+             * @enum {string}
+             */
+            intensity: "easy" | "moderate" | "hard" | "very_hard";
+            /** Sets */
+            sets: components["schemas"]["ExerciseLogCreateIn-Output"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** TokenExportOut */
         TokenExportOut: {
             /** Id */
@@ -2019,6 +2237,8 @@ export interface components {
             intensity: "easy" | "moderate" | "hard" | "very_hard";
             /** Source */
             source: string;
+            /** Planned Sets */
+            planned_sets?: components["schemas"]["ExerciseLogCreateIn-Output"][];
             /**
              * Created At
              * Format: date-time
@@ -2067,6 +2287,8 @@ export interface components {
             intensity: "easy" | "moderate" | "hard" | "very_hard";
             /** Source */
             source: string;
+            /** Planned Sets */
+            planned_sets?: components["schemas"]["ExerciseLogCreateIn-Output"][];
         };
         /** WorkoutStartIn */
         WorkoutStartIn: {
@@ -3451,7 +3673,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ExerciseLogCreateIn"];
+                "application/json": components["schemas"]["ExerciseLogCreateIn-Input"];
             };
         };
         responses: {
@@ -3901,6 +4123,228 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CsvExportOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    templates_api_v1_workout_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"][];
+                };
+            };
+        };
+    };
+    create_template_api_v1_workout_templates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_template_api_v1_workout_templates__template_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_template_api_v1_workout_templates__template_id__start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    repeat_workout_api_v1_workouts__workout_id__repeat_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trash_api_v1_trash_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletedOut"][];
+                };
+            };
+        };
+    };
+    restore_api_v1_trash__entry_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    erase_api_v1_trash__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

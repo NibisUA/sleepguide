@@ -76,6 +76,9 @@ async def update_log(
 async def delete_log(session: AsyncSession, user: User, log_id: int) -> None:
     await lock_diary(session, user.id)
     log = await get_log(session, user.id, log_id)
+    from app.services.trash_service import archive
+
+    await archive(session, user.id, "stress", log)
     await session.delete(log)
     await session.commit()
 

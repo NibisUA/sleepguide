@@ -227,7 +227,7 @@ def test_patch_with_an_end_time_finishes_a_running_workout():
 
 def test_delete_returns_204_and_removes_the_row():
     row = workout_row(minutes=30)
-    client = client_with([row])
+    client = client_with([row], [])
     response = client.delete("/api/v1/workouts/7")
     assert response.status_code == 204
     assert client.sessions[0].deleted == [row]  # type: ignore[attr-defined]

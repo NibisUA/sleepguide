@@ -1,3 +1,4 @@
+import { TrashSection } from "../trash/TrashSection";
 import { QueryError, Skeleton } from "../../components/QueryState";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -182,6 +183,7 @@ export function Settings({ onDeleted }: { onDeleted: () => void }) {
 
       <IntegrationsSection />
       <DataTransferSection />
+      <TrashSection />
       <GoalsSettings />
       <PrivacySection onDeleted={onDeleted} />
 
