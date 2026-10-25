@@ -14,7 +14,10 @@ Built by [NibisUA](https://github.com/NibisUA) as a full-stack application using
 - Shows daily summaries, history charts, and personal insights.
 - Sends configurable Telegram reminders and supports iOS Shortcuts.
 - Provides CSV/JSON data transfer, saved workout templates, and recoverable deletion.
-- Supports Ukrainian and English interfaces.
+- Tracks user-defined deadline plans with weighted schedules, progress history, and local text/screenshot import.
+- Supports Ukrainian and English interfaces (the deadline tracker is Ukrainian).
+
+Deadline tracker setup and import rules: [docs/DEADLINE_TRACKER.md](docs/DEADLINE_TRACKER.md).
 
 ## Architecture
 

@@ -12,6 +12,7 @@ from app.schemas.saved import DeletedExportOut, TemplateOut
 from app.schemas.screen_time import ScreenTimeOut
 from app.schemas.sleep import SleepSessionOut
 from app.schemas.stress import StressLogOut
+from app.schemas.study import StudyEventOut, StudyPlanOut
 from app.schemas.workout import WorkoutOut
 
 
@@ -62,6 +63,8 @@ class DataExportOut(BaseModel):
     sleep_feedback: list[FeedbackExportOut]
     workout_templates: list[TemplateOut] = Field(default_factory=list)
     deleted_entries: list[DeletedExportOut] = Field(default_factory=list)
+    study_plans: list[StudyPlanOut] = Field(default_factory=list)
+    study_events: list[StudyEventOut] = Field(default_factory=list)
 
 
 class DeleteMeIn(BaseModel):

@@ -16,6 +16,7 @@ from app.models import (
     Workout,
 )
 from app.models.saved import DeletedEntry, WorkoutTemplate
+from app.models.study import StudyEvent, StudyPlan
 from app.schemas.exercise import ExerciseLogOut, ExerciseOut
 from app.schemas.insight import InsightOut
 from app.schemas.personal import FeedbackExportOut
@@ -29,6 +30,7 @@ from app.schemas.privacy import (
     WorkoutExportOut,
 )
 from app.schemas.saved import DeletedExportOut, TemplateOut
+from app.schemas.study import StudyEventOut, StudyPlanOut
 
 
 async def export_data(session: AsyncSession, user: User) -> DataExportOut:
@@ -51,6 +53,8 @@ async def export_data(session: AsyncSession, user: User) -> DataExportOut:
         )
         rows[name] = [schema.model_validate(row) for row in result.scalars()]
     for name, model, schema in (
+        ("study_plans", StudyPlan, StudyPlanOut),
+        ("study_events", StudyEvent, StudyEventOut),
         ("workout_templates", WorkoutTemplate, TemplateOut),
         ("deleted_entries", DeletedEntry, DeletedExportOut),
     ):

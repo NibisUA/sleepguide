@@ -14,6 +14,7 @@ from app.api import (
     screen_time,
     sleep,
     stress,
+    study,
     tokens,
     workout,
 )
@@ -35,3 +36,5 @@ api_router.include_router(personal.router)
 api_router.include_router(csv_data.router)
 
 api_router.include_router(saved.router)
+
+api_router.include_router(study.router)

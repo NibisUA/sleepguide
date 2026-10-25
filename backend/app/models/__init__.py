@@ -7,12 +7,15 @@ from app.models.screen_time import ScreenTimeDaily
 from app.models.sleep import SleepSession
 from app.models.sleep_feedback import SleepFeedback
 from app.models.stress import StressLog
+from app.models.study import StudyEvent, StudyPlan
 from app.models.user import User
 from app.models.workout import Workout
 
 __all__ = [
     "ApiToken",
     "Base",
+    "StudyPlan",
+    "StudyEvent",
     "DeletedEntry",
     "WorkoutTemplate",
     "Exercise",

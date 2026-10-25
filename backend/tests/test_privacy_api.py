@@ -24,7 +24,7 @@ def test_export_covers_empty_collections_and_never_includes_token_hashes():
         last_used_at=None,
         revoked_at=now,
     )
-    client = client_with([], [], [], [], [token], [], [], [], [], [], [], user=owner())
+    client = client_with([], [], [], [], [token], [], [], [], [], [], [], [], [], user=owner())
     response = client.get("/api/v1/me/export")
     assert response.status_code == 200
     body = response.json()
@@ -42,6 +42,8 @@ def test_export_covers_empty_collections_and_never_includes_token_hashes():
         "exercises",
         "exercise_logs",
         "sleep_feedback",
+        "study_plans",
+        "study_events",
         "workout_templates",
         "deleted_entries",
     }

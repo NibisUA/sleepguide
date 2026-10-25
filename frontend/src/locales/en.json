@@ -14,7 +14,8 @@
     "home": "Home",
     "history": "History",
     "settings": "Settings",
-    "insights": "Insights"
+    "insights": "Insights",
+    "study": "Plans"
   },
   "home": {
     "title": "SleepGuide"
@@ -405,7 +406,7 @@
     "policy": {
       "data": {
         "title": "Data stored",
-        "body": "Telegram ID, language, time zone, sleep preferences and reminder settings. Sleep times, workouts, stress ratings, screen-time records and personal insights. Integration metadata includes a label, prefix, token hash and use/revocation dates. Full tokens are not stored after creation. Exercise data includes names, weights, repetitions, distances and times. Records and streaks are calculated from history.\nOptional morning restedness ratings and Sleep Score snapshots are used to evaluate the formula. Weekly targets and pattern reminder preferences are also stored."
+        "body": "Telegram ID, language, time zone, sleep preferences and reminder settings. Sleep times, workouts, stress ratings, screen-time records and personal insights. Integration metadata includes a label, prefix, token hash and use/revocation dates. Full tokens are not stored after creation. Exercise data includes names, weights, repetitions, distances and times. Records and streaks are calculated from history.\nOptional morning restedness ratings and Sleep Score snapshots are used to evaluate the formula. Weekly targets and pattern reminder preferences are also stored. Your preparation plans, question identifiers, dates, difficulty weights and completion history are also stored."
       },
       "purpose": {
         "title": "Purpose",
@@ -476,7 +477,10 @@
     "template_limit": "You can save up to 50 templates.",
     "workout_running": "Finish the current workout first.",
     "template_missing_exercise": "An exercise in the plan was deleted. Restore it from Trash or save a new template.",
-    "template_not_found": "This template was deleted."
+    "template_not_found": "This template was deleted.",
+    "study_not_found": "Plan or question not found.",
+    "study_conflict": "The plan changed in another tab. Refresh and retry.",
+    "study_invalid": "Check start, deadline and reserve days. Keep completed question numbers and schedule pending questions before the reserve."
   },
   "records": {
     "title": "Exercise progress",
