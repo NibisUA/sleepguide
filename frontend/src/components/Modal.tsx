@@ -16,7 +16,7 @@ export function Modal({ title, onClose, children }: {
     if (root) root.inert = true;
     const box = panel.current!;
     const controls = () => Array.from(box.querySelectorAll<HTMLElement>(
-      'button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]',
+      'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]',
     ));
     (controls()[0] ?? box).focus();
     function key(event: KeyboardEvent) {

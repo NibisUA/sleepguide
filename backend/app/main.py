@@ -19,6 +19,9 @@ from app.core.db import SessionLocal
 from app.services.errors import DomainError
 
 ERROR_STATUS = {
+    "study_invalid": 422,
+    "study_not_found": 404,
+    "study_conflict": 409,
     "restore_conflict": 409,
     "deleted_not_found": 404,
     "template_not_found": 404,

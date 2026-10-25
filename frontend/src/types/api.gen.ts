@@ -878,6 +878,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/study/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Parse */
+        post: operations["parse_api_v1_study_parse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Plans */
+        get: operations["plans_api_v1_study_plans_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_api_v1_study_plans_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview */
+        post: operations["preview_api_v1_study_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update */
+        put: operations["update_api_v1_study_plans__plan_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans/{plan_id}/items/{label}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check */
+        post: operations["check_api_v1_study_plans__plan_id__items__label__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans/{plan_id}/replan-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Replan Preview */
+        get: operations["replan_preview_api_v1_study_plans__plan_id__replan_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans/{plan_id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Schedule */
+        post: operations["schedule_api_v1_study_plans__plan_id__schedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/study/plans/{plan_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Events */
+        get: operations["events_api_v1_study_plans__plan_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1127,6 +1264,10 @@ export interface components {
             workout_templates?: components["schemas"]["TemplateOut"][];
             /** Deleted Entries */
             deleted_entries?: components["schemas"]["DeletedExportOut"][];
+            /** Study Plans */
+            study_plans?: components["schemas"]["StudyPlanOut"][];
+            /** Study Events */
+            study_events?: components["schemas"]["StudyEventOut"][];
         };
         /**
          * DaySummaryOut
@@ -1944,6 +2085,153 @@ export interface components {
             category?: ("university" | "work" | "relationships" | "money" | "sleep" | "training" | "personal" | "other") | null;
             /** Logged At */
             logged_at?: string | null;
+        };
+        /** StudyCheckIn */
+        StudyCheckIn: {
+            /** Expected Version */
+            expected_version: number;
+            /** Done */
+            done: boolean;
+        };
+        /** StudyEventOut */
+        StudyEventOut: {
+            /** Id */
+            id: number;
+            /** Plan Id */
+            plan_id: number;
+            /** Kind */
+            kind: string;
+            /** Detail */
+            detail: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** StudyItemIn */
+        StudyItemIn: {
+            /** Label */
+            label: string;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Group
+             * @default
+             */
+            group: string;
+            /**
+             * Weight
+             * @default 1
+             */
+            weight: number;
+            /** Scheduled Date */
+            scheduled_date?: string | null;
+        };
+        /** StudyItemOut */
+        StudyItemOut: {
+            /** Label */
+            label: string;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Group
+             * @default
+             */
+            group: string;
+            /**
+             * Weight
+             * @default 1
+             */
+            weight: number;
+            /** Scheduled Date */
+            scheduled_date?: string | null;
+            /** Done At */
+            done_at?: string | null;
+        };
+        /** StudyParseIn */
+        StudyParseIn: {
+            /** Text */
+            text: string;
+            /** Year */
+            year?: number | null;
+        };
+        /** StudyPlanIn */
+        StudyPlanIn: {
+            /** Name */
+            name: string;
+            /**
+             * Deadline
+             * Format: date
+             */
+            deadline: string;
+            /** Start Date */
+            start_date?: string | null;
+            /** Total */
+            total: number;
+            /**
+             * Reserve Days
+             * @default 0
+             */
+            reserve_days: number;
+            /** Daily Capacity */
+            daily_capacity?: number | null;
+            /** Items */
+            items?: components["schemas"]["StudyItemIn"][] | null;
+            /**
+             * Preserve Schedule
+             * @default false
+             */
+            preserve_schedule: boolean;
+            /** Expected Version */
+            expected_version?: number | null;
+        };
+        /** StudyPlanOut */
+        StudyPlanOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Deadline
+             * Format: date
+             */
+            deadline: string;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /** Reserve Days */
+            reserve_days: number;
+            /** Daily Capacity */
+            daily_capacity: number | null;
+            /** Items */
+            items: components["schemas"]["StudyItemOut"][];
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** StudyReplanIn */
+        StudyReplanIn: {
+            /** Expected Version */
+            expected_version: number;
+            /** Assignments */
+            assignments: {
+                [key: string]: string | null;
+            };
         };
         /** TelegramLoginIn */
         TelegramLoginIn: {
@@ -4345,6 +4633,295 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    parse_api_v1_study_parse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyParseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    plans_api_v1_study_plans_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyPlanOut"][];
+                };
+            };
+        };
+    };
+    create_api_v1_study_plans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_study_preview_post: {
+        parameters: {
+            query?: {
+                plan_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_api_v1_study_plans__plan_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_api_v1_study_plans__plan_id__items__label__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: number;
+                label: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyCheckIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replan_preview_api_v1_study_plans__plan_id__replan_preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    schedule_api_v1_study_plans__plan_id__schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudyReplanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_api_v1_study_plans__plan_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyEventOut"][];
+                };
             };
             /** @description Validation Error */
             422: {

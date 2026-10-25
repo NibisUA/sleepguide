@@ -12,6 +12,7 @@ import { useMe, useUpdateMe } from "../features/profile/api";
 import { QuickAddSheet } from "../features/quickadd/QuickAddSheet";
 import { focusCard, type QuickTarget } from "../lib/focusCard";
 import { isSessionClosed, resumeSession } from "../lib/api";
+const Study = lazy(() => import("../features/study/Study").then(module => ({ default: module.Study })));
 const History = lazy(() => import("../features/history/History").then(module => ({ default: module.History })));
 const Insights = lazy(() => import("../features/insights/Insights").then(module => ({ default: module.Insights })));
 const Settings = lazy(() => import("../features/settings/Settings").then(module => ({ default: module.Settings })));
@@ -35,7 +36,7 @@ const queryClient: QueryClient = new QueryClient({
   }),
 });
 
-const TABS = ["home", "history", "insights", "settings"] as const;
+const TABS = ["home", "study", "history", "insights", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 function Shell() {
@@ -84,6 +85,8 @@ function Shell() {
         <Suspense fallback={<main className="mx-auto max-w-md p-4"><Skeleton /></main>}>
         {tab === "home" ? (
           <Home />
+        ) : tab === "study" ? (
+          <Study />
         ) : tab === "history" ? (
           <History />
         ) : tab === "insights" ? (
@@ -114,7 +117,7 @@ function Shell() {
                 type="button"
                 onClick={() => setTab(value)}
                 aria-current={tab === value ? "page" : undefined}
-                className={`flex-1 py-3 text-xs ${
+                className={`min-w-0 flex-1 break-words px-1 py-3 text-xs ${
                   tab === value ? "font-semibold text-primary" : "text-muted"
                 }`}
               >
